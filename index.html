@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conversion Advantage — Claude Training Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAFAFA;
+    --surface:#FFFFFF;
+    --surface-2:#F3F3F5;
+    --line:#E7E7EA;
+    --text:#0D0D0D;
+    --text-dim:#6E6E6E;
+    --orange:#F7941D;
+    --pink:#E91E8C;
+    --violet:#7B3FE4;
+    --navy:#111318;
+    --navy-2:#1B1D22;
+    --up:#1E9E5A;
+    --grad:linear-gradient(90deg, var(--orange), var(--pink), var(--violet));
+    --ease:cubic-bezier(.16,1,.3,1);
+    --shadow-rest:0 1px 2px rgba(0,0,0,.03);
+    --shadow-base:0 20px 44px -22px rgba(0,0,0,.16);
+    --glow-violet:rgba(123,63,228,.18);
+    --glow-pink:rgba(233,30,140,.18);
+    --glow-orange:rgba(247,148,29,.18);
+    --dev-soft:rgba(123,63,228,.10);
+    --mkt-soft:rgba(233,30,140,.10);
+  }
+  html[data-theme="dark"]{
+    --bg:#0A0A0B;
+    --surface:#161618;
+    --surface-2:#1E1F22;
+    --line:#2A2B2F;
+    --text:#F5F5F7;
+    --text-dim:#8E8E93;
+    --up:#30D158;
+    --shadow-rest:none;
+    --shadow-base:0 24px 48px -24px rgba(0,0,0,.7);
+    --glow-violet:rgba(123,63,228,.28);
+    --glow-pink:rgba(233,30,140,.28);
+    --glow-orange:rgba(247,148,29,.25);
+    --dev-soft:rgba(123,63,228,.16);
+    --mkt-soft:rgba(233,30,140,.16);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);transition:background .35s var(--ease),color .35s var(--ease);}
+  body{font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;position:relative;overflow-x:hidden;min-height:100vh;}
+  html[data-theme="dark"] body::before{
+    content:'';position:fixed;top:-15%;left:-10%;width:130%;height:130%;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(circle at 18% 15%, rgba(247,148,29,.10), transparent 42%),
+      radial-gradient(circle at 82% 8%, rgba(233,30,140,.09), transparent 42%),
+      radial-gradient(circle at 55% 85%, rgba(123,63,228,.11), transparent 46%);
+    filter:blur(70px);
+  }
+  h1,h2,h3,.num{font-family:'Poppins',sans-serif;}
+  a{color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+  button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--violet);outline-offset:2px;}
+  @media (prefers-reduced-motion: reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important;}}
+
+  .wrap{max-width:1120px;margin:0 auto;padding:44px 32px 0;position:relative;z-index:1;}
+
+  /* ---- Header ---- */
+  header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;}
+  .ca-logo{font-family:'Poppins',sans-serif;font-weight:800;font-size:18px;line-height:1.05;letter-spacing:-.01em;}
+  .header-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px;}
+  .header-tagline{font-size:11px;font-weight:600;color:var(--text-dim);text-align:right;letter-spacing:.06em;line-height:1.5;}
+  .theme-switch{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:2px;}
+  .theme-btn{padding:5px 13px;font-size:11px;font-weight:600;color:var(--text-dim);background:none;border:none;border-radius:6px;transition:background .3s var(--ease),color .3s var(--ease);font-family:'Inter';}
+  .theme-btn.active{background:var(--grad);color:#fff;}
+  .theme-btn:hover:not(.active){background:var(--surface-2);color:var(--text);}
+
+  /* ---- Screen 1: select ---- */
+  #select-screen{min-height:calc(100vh - 140px);display:flex;align-items:center;}
+  .select-wrap{width:100%;padding:20px 0 80px;}
+  .eyebrow{font-size:12px;font-weight:700;letter-spacing:.12em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:10px;}
+  .select-heading{font-size:clamp(2rem,4.2vw,3rem);font-weight:800;letter-spacing:-.02em;line-height:1.1;max-width:16ch;margin:0 0 16px;}
+  .select-sub{color:var(--text-dim);font-size:1.02rem;max-width:54ch;line-height:1.6;margin:0 0 52px;}
+
+  .fork{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .fork-origin{position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:1px;height:30px;background:var(--line);}
+  @media (max-width:720px){.fork{grid-template-columns:1fr;}.fork-origin{display:none;}}
+
+  .track-card{position:relative;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:30px 28px;
+    display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow-rest);
+    transition:transform .4s var(--ease),border-color .4s var(--ease),box-shadow .4s var(--ease);}
+  .track-card.dev{border-top:3px solid var(--violet);}
+  .track-card.mkt{border-top:3px solid var(--pink);}
+  .track-card.dev:hover{transform:translateY(-4px);box-shadow:var(--shadow-base),0 0 0 1px var(--glow-violet);}
+  .track-card.mkt:hover{transform:translateY(-4px);box-shadow:var(--shadow-base),0 0 0 1px var(--glow-pink);}
+
+  .track-tag{display:inline-flex;width:fit-content;font-size:.75rem;font-weight:700;letter-spacing:.02em;padding:4px 11px;border-radius:100px;}
+  .track-card.dev .track-tag{background:var(--dev-soft);color:var(--violet);}
+  .track-card.mkt .track-tag{background:var(--mkt-soft);color:var(--pink);}
+
+  .track-card h2{font-size:1.4rem;font-weight:800;margin:0;letter-spacing:-.01em;}
+  .track-card p{color:var(--text-dim);font-size:.95rem;line-height:1.6;margin:0;}
+  .track-card .track-tool{font-size:.85rem;color:var(--text-dim);border-top:1px solid var(--line);padding-top:14px;margin-top:2px;}
+  .track-card .track-tool strong{color:var(--text);font-weight:700;}
+
+  .track-go{align-self:flex-start;margin-top:4px;border:none;border-radius:9px;padding:10px 18px;font-weight:700;font-size:.9rem;color:#fff;
+    transition:transform .2s var(--ease),box-shadow .2s var(--ease);}
+  .track-card.dev .track-go{background:var(--violet);}
+  .track-card.mkt .track-go{background:var(--pink);}
+  .track-go:hover{transform:translateY(-1px);}
+  .track-card.dev .track-go:hover{box-shadow:0 8px 20px -6px var(--glow-violet);}
+  .track-card.mkt .track-go:hover{box-shadow:0 8px 20px -6px var(--glow-pink);}
+
+  .select-footer{margin-top:44px;font-size:.85rem;color:var(--text-dim);}
+
+  /* ---- Screen 2: workflow ---- */
+  #workflow-screen{display:none;}
+  .workflow-header{padding:8px 0 8px;}
+
+  .track-switcher{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px;margin-bottom:22px;}
+  .switch-btn{border:none;background:none;padding:8px 18px;border-radius:8px;font-size:.85rem;font-weight:600;color:var(--text-dim);font-family:'Inter';
+    transition:background .3s var(--ease),color .3s var(--ease);}
+  .switch-btn:hover:not(.active){background:var(--surface-2);color:var(--text);}
+  .switch-btn.active{background:var(--grad);color:#fff;}
+
+  .workflow-heading{font-size:clamp(1.6rem,3vw,2.1rem);font-weight:800;letter-spacing:-.02em;margin:0 0 8px;}
+  .workflow-sub{color:var(--text-dim);max-width:62ch;line-height:1.6;margin:0 0 8px;}
+
+  .progress-row{display:flex;align-items:center;gap:12px;margin:18px 0 40px;font-size:.85rem;color:var(--text-dim);}
+  .progress-track{flex:1;height:6px;background:var(--surface-2);border-radius:4px;overflow:hidden;max-width:240px;}
+  .progress-fill{height:100%;background:var(--grad);width:0%;transition:width .5s var(--ease);}
+  .change-track-btn{background:var(--surface);border:1px solid var(--line);color:var(--text-dim);border-radius:100px;padding:7px 14px;font-size:.8rem;
+    transition:border-color .2s var(--ease),color .2s var(--ease);}
+  .change-track-btn:hover{border-color:var(--text-dim);color:var(--text);}
+
+  /* stepped path */
+  .path{display:flex;align-items:flex-start;margin-bottom:8px;overflow-x:auto;padding:4px 4px 10px;}
+  .path-node{display:flex;flex-direction:column;align-items:center;flex:1;min-width:104px;position:relative;background:none;border:none;padding:0;color:var(--text);}
+  .path-node .connector{position:absolute;top:19px;left:-50%;width:100%;height:2px;background:var(--line);z-index:0;transition:background .3s var(--ease);}
+  .path-node:first-child .connector{display:none;}
+  .path-node .connector.done{background:var(--grad);}
+
+  .node-circle{position:relative;z-index:1;width:40px;height:40px;border-radius:50%;border:2px solid var(--line);background:var(--surface);
+    display:flex;align-items:center;justify-content:center;font-family:'Poppins';font-weight:700;font-size:.95rem;color:var(--text-dim);
+    transition:border-color .25s var(--ease),color .25s var(--ease),background .25s var(--ease),box-shadow .25s var(--ease);}
+
+  .path-node.active .node-circle{border-color:var(--violet);color:var(--violet);box-shadow:0 0 0 4px var(--glow-violet);}
+  body.mkt-active .path-node.active .node-circle{border-color:var(--pink);color:var(--pink);box-shadow:0 0 0 4px var(--glow-pink);}
+
+  .path-node.done .node-circle{background:var(--grad);border-color:transparent;color:#fff;}
+
+  .node-label{margin-top:10px;font-size:.8rem;text-align:center;color:var(--text-dim);max-width:100px;line-height:1.35;}
+  .path-node.active .node-label{color:var(--text);font-weight:700;}
+
+  /* detail panel */
+  .detail{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:32px 34px;margin-top:26px;box-shadow:var(--shadow-rest);
+    transition:box-shadow .4s var(--ease),border-color .4s var(--ease);}
+  .detail:hover{box-shadow:var(--shadow-base);}
+
+  .detail-eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.06em;margin:0 0 8px;color:var(--violet);}
+  body.mkt-active .detail-eyebrow{color:var(--pink);}
+
+  .detail h3{font-size:1.35rem;font-weight:800;letter-spacing:-.01em;margin:0 0 12px;}
+  .detail p.lead{color:var(--text-dim);line-height:1.65;margin:0 0 18px;max-width:70ch;}
+  .detail ul{margin:0 0 22px;padding-left:20px;line-height:1.75;}
+  .detail ul li{margin-bottom:5px;}
+  .detail code{background:var(--surface-2);border-radius:4px;padding:2px 6px;font-family:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;font-size:.85em;color:var(--text);}
+
+  .section-label{font-size:.72rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--text-dim);margin:0 0 12px;}
+  .section-label.howto-label{color:var(--violet);}
+  body.mkt-active .section-label.howto-label{color:var(--pink);}
+
+  .howto-list{list-style:none;counter-reset:howto;margin:0 0 28px;padding:0;}
+  .howto-list li{counter-increment:howto;position:relative;padding:1px 0 4px 40px;margin:0 0 16px;line-height:1.65;}
+  .howto-list li:last-child{margin-bottom:0;}
+  .howto-list li:before{content:counter(howto);position:absolute;left:0;top:-1px;width:26px;height:26px;border-radius:50%;background:var(--grad);color:#fff;font-size:.78rem;font-weight:800;display:flex;align-items:center;justify-content:center;}
+
+  .context-list{margin:0 0 22px;padding-left:20px;line-height:1.75;}
+  .context-list li{margin-bottom:6px;color:var(--text-dim);}
+  .context-list li code{color:var(--text);}
+
+  .prompt-box{position:relative;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:16px 90px 16px 16px;margin:0 0 20px;}
+  .prompt-box .prompt-label{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--violet);margin:0 0 8px;}
+  body.mkt-active .prompt-box .prompt-label{color:var(--pink);}
+  .prompt-box pre{margin:0;white-space:pre-wrap;word-break:break-word;font-family:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;font-size:.86rem;line-height:1.65;color:var(--text);}
+  .prompt-copy-btn{position:absolute;top:14px;right:14px;border:1px solid var(--line);background:var(--surface);border-radius:7px;padding:6px 12px;font-size:.75rem;font-weight:700;color:var(--text-dim);
+    transition:background .2s var(--ease),color .2s var(--ease),border-color .2s var(--ease);}
+  .prompt-copy-btn:hover{color:var(--text);border-color:var(--text-dim);}
+  .prompt-copy-btn.copied{background:var(--grad);color:#fff;border-color:transparent;}
+  @media(max-width:480px){.prompt-box{padding:16px;}.prompt-copy-btn{position:static;margin-top:10px;}}
+
+  .example-box{background:var(--surface);border:1px dashed var(--line);border-radius:10px;padding:16px 18px;margin:0 0 20px;}
+  .example-box .example-label{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin:0 0 10px;}
+  .example-box .example-body{font-size:.86rem;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word;font-family:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;}
+
+  .detail-actions{display:flex;gap:10px;align-items:center;border-top:1px solid var(--line);padding-top:20px;flex-wrap:wrap;}
+  .mark-btn{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:9px 16px;font-size:.88rem;font-weight:700;color:var(--text);
+    transition:background .2s var(--ease),border-color .2s var(--ease);}
+  .mark-btn.done{background:var(--grad);border-color:transparent;color:#fff;}
+  .nav-btn{background:none;border:none;color:var(--text-dim);font-size:.88rem;font-weight:600;padding:9px 8px;}
+  .nav-btn:hover:not(:disabled){color:var(--text);}
+  .nav-btn:disabled{opacity:.35;cursor:default;}
+
+  /* shared workflow */
+  .shared-block{margin-top:56px;border-top:1px solid var(--line);padding-top:32px;}
+  .shared-toggle{width:100%;text-align:left;background:none;border:none;display:flex;align-items:center;justify-content:space-between;padding:4px 0;
+    font-family:'Poppins';font-size:1.1rem;font-weight:700;color:var(--text);}
+  .shared-toggle .chev{color:var(--text-dim);transition:transform .2s var(--ease);font-size:.9rem;}
+  .shared-toggle[aria-expanded="true"] .chev{transform:rotate(180deg);}
+  .shared-body{display:none;padding-top:18px;max-width:70ch;}
+  .shared-body.open{display:block;}
+  .shared-body ol{padding-left:20px;line-height:1.85;color:var(--text-dim);}
+  .shared-body ol li strong{color:var(--text);}
+  .rules-note{margin-top:18px;padding:16px 18px;background:var(--surface-2);border-radius:12px;font-size:.88rem;color:var(--text-dim);line-height:1.65;}
+
+  /* brand band */
+  .brand-band{background:linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);border-radius:16px;padding:28px 32px;
+    display:flex;justify-content:space-between;align-items:center;margin:50px 0 20px;color:#fff;
+    transition:box-shadow .4s var(--ease);}
+  .brand-band:hover{box-shadow:var(--shadow-base),0 0 0 1px var(--glow-violet);}
+  .brand-band .cta{font-family:'Poppins';font-weight:700;font-size:17px;line-height:1.3;max-width:340px;}
+  .brand-band .meta{text-align:right;font-size:12px;color:#A9AAB0;line-height:1.7;}
+  .brand-band .meta .ca-name{font-family:'Poppins';font-weight:800;font-size:14px;color:#fff;margin-bottom:2px;}
+
+  footer.page-footer{margin:24px 0 44px;color:var(--text-dim);font-size:.8rem;}
+
+  @media(max-width:640px){
+    .detail{padding:24px 20px;}
+    .node-label{display:none;}
+    .path-node.active .node-label{display:block;position:absolute;top:46px;white-space:nowrap;max-width:none;}
+    .brand-band{flex-direction:column;align-items:flex-start;gap:14px;}
+    .brand-band .meta{text-align:left;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="ca-logo">conversion<br>advantage</div>
+    <div class="header-right">
+      <div class="header-tagline">CLAUDE TRAINING<br>PORTAL</div>
+      <div class="theme-switch" id="themeSwitch">
+        <button class="theme-btn" data-t="light">Light</button>
+        <button class="theme-btn" data-t="dark">Dark</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- SCREEN 1 -->
+  <section id="select-screen">
+    <div class="select-wrap">
+      <div class="eyebrow">GETTING STARTED WITH CLAUDE</div>
+      <h1 class="select-heading">Choose your track to begin</h1>
+      <p class="select-sub">
+        The setup, tools and habits differ depending on what you work on day to day.
+        Pick the track that matches your role — you can switch any time.
+      </p>
+
+      <div style="position:relative;">
+        <div class="fork-origin"></div>
+        <div class="fork">
+          <div class="track-card dev">
+            <span class="track-tag">DEVELOPMENT</span>
+            <h2>Development &amp; Web</h2>
+            <p>WordPress builds, custom sites, microsites, CAWB and Dealer Connect work — using Claude directly inside your codebase.</p>
+            <div class="track-tool">Primary tool: <strong>Claude Code</strong>, run from the terminal or desktop app.</div>
+            <button class="track-go" type="button" data-track="dev">Start development track</button>
+          </div>
+
+          <div class="track-card mkt">
+            <span class="track-tag">MARKETING &amp; ACCOUNTS</span>
+            <h2>Marketing &amp; Accounts</h2>
+            <p>Client reporting, proposals, ad copy, SEO content and account work — using Claude as a drafting and research partner.</p>
+            <div class="track-tool">Primary tool: <strong>Claude Cowork / Claude chat</strong>, no coding required.</div>
+            <button class="track-go" type="button" data-track="mkt">Start marketing track</button>
+          </div>
+        </div>
+      </div>
+
+      <p class="select-footer">From Clicks to Conversions — this portal will grow as the rollout continues.</p>
+    </div>
+  </section>
+
+  <!-- SCREEN 2 -->
+  <section id="workflow-screen">
+    <div class="workflow-header">
+      <div class="track-switcher">
+        <button class="switch-btn" id="switch-dev" type="button" data-track="dev">Development</button>
+        <button class="switch-btn" id="switch-mkt" type="button" data-track="mkt">Marketing &amp; Accounts</button>
+      </div>
+      <h1 class="workflow-heading" id="wf-heading">Development track</h1>
+      <p class="workflow-sub" id="wf-sub"></p>
+
+      <div class="progress-row">
+        <span id="progress-label">0 of 5 complete</span>
+        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+        <button class="change-track-btn" id="change-track-btn" type="button">Change track</button>
+      </div>
+    </div>
+
+    <div class="path" id="path-row"></div>
+
+    <div class="detail" id="detail-panel"></div>
+
+    <div class="shared-block">
+      <button class="shared-toggle" id="shared-toggle" type="button" aria-expanded="false">
+        <span>The shared CA delivery workflow</span>
+        <span class="chev">⌄</span>
+      </button>
+      <div class="shared-body" id="shared-body">
+        <p style="color:var(--text-dim);line-height:1.65;">Both tracks plug into the same underlying process CA already uses for client work — this is the backbone for how you brief Claude on any task:</p>
+        <ol>
+          <li><strong>Establish the basics</strong> — client, objective, audience, geography, budget, decision-maker.</li>
+          <li><strong>Bring real inputs</strong> — brand guidelines, competitor context, approved assets, not a summary from memory.</li>
+          <li><strong>Confirm scope and exclusions</strong> so Claude doesn't draft outside what's agreed.</li>
+          <li><strong>Use proper access</strong> for ad platforms, analytics and hosting — never paste credentials into a prompt.</li>
+          <li><strong>Draft</strong> — code, copy, structure, whatever the task calls for.</li>
+          <li><strong>Route for human review</strong> before anything reaches a client.</li>
+          <li><strong>Verify</strong> destinations, tracking and dates before launch.</li>
+          <li><strong>Report honestly</strong>, including limitations — a click is not a sale, a lead is not a booking.</li>
+        </ol>
+        <div class="rules-note">
+          This portal will expand to cover MCP connectors, folder and project management, pulling and pushing changes, running terminal sessions, Claude Code vs. Claude Cowork vs. chat, and Skills — as that material is added.
+        </div>
+      </div>
+    </div>
+
+    <div class="brand-band">
+      <div class="cta">One AI, two ways of working — same standards either side.</div>
+      <div class="meta">
+        <div class="ca-name">conversion advantage</div>
+        Internal training portal<br>
+        Proudly South African · Knysna
+      </div>
+    </div>
+
+    <footer class="page-footer">Conversion Advantage internal training portal · v1</footer>
+  </section>
+</div>
+
+<script>
+(function() {
+  var STORAGE_KEY = 'ca_training_state_v1';
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return { track: null, activeStep: {dev: 0, mkt: 0}, done: {dev: [], mkt: []}, theme: null };
+      var parsed = JSON.parse(raw);
+      parsed.activeStep = parsed.activeStep || {dev: 0, mkt: 0};
+      parsed.done = parsed.done || {dev: [], mkt: []};
+      return parsed;
+    } catch (e) {
+      return { track: null, activeStep: {dev: 0, mkt: 0}, done: {dev: [], mkt: []}, theme: null };
+    }
+  }
+
+  function saveState(state) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  var state = loadState();
+
+  // ---- theme (matches CA dashboard's Light/Dark button pattern) ----
+  function applyTheme() {
+    var effective = state.theme;
+    if (effective !== 'light' && effective !== 'dark') {
+      effective = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    if (effective === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+    document.querySelectorAll('.theme-btn').forEach(function(b) {
+      b.classList.toggle('active', b.getAttribute('data-t') === effective);
+    });
+  }
+  applyTheme();
+
+  document.getElementById('themeSwitch').addEventListener('click', function(e) {
+    var btn = e.target.closest('.theme-btn');
+    if (!btn) return;
+    state.theme = btn.getAttribute('data-t');
+    saveState(state);
+    applyTheme();
+  });
+
+  // ---- content ----
+  var CONTENT = {
+    dev: {
+      label: 'Development',
+      sub: 'You work in the codebase — WordPress builds, custom sites, microsites and Dealer Connect/CAWB integrations. Claude Code runs from the terminal or desktop app and reads your project directly.',
+      steps: [
+        {
+          title: 'Install Claude Code',
+          lead: 'Get Claude Code running on your machine before you touch a live project. This is a one-time setup per machine.',
+          steps: [
+            'Check you have Node.js 22 or newer — open a terminal and run <code>node -v</code>. If it’s missing or older, install/update Node first.',
+            'Install Claude Code with <code>npm install -g @anthropic-ai/claude-code</code>.',
+            'Confirm with your team lead that your account is on CA’s Anthropic workspace/team, so your usage is billed and tracked correctly.',
+            'From inside a project folder, type <code>claude</code> and press Enter to launch it. The first time, it opens a browser tab asking you to log in — sign in with your CA account.',
+            'Sanity check: type a simple request like "list the files in this folder" — if it responds, you’re set up correctly.'
+          ],
+          context: []
+        },
+        {
+          title: 'Set up your status line',
+          lead: 'A status line along the bottom of the terminal shows which model you’re on and how much of the context window — Claude’s working memory for the session — you’ve used. 30 seconds of setup that pays off every session.',
+          steps: [
+            'Type the prompt below — Claude installs it for you.',
+            'If the terminal asks for your computer password, type it (nothing shows as you type) and press Enter — that’s the Node install running.',
+            'Type <code>/exit</code>, then <code>claude</code> again — the bar is there.'
+          ],
+          context: [
+            'Both numbers matter from day one: the model decides the quality of the work, and the context fills faster than you’d expect — past about half, Claude starts forgetting what you told it earlier in the session. Without the status line you find out when the work goes vague; with it, you glance down the way you’d glance at a fuel gauge.',
+            'The context percentage is the one to watch — past about half, finish the piece you’re on and start a fresh session.',
+            'Claude Code has a built-in route too — type <code>/statusline</code> and Claude sets one up without the add-on.',
+            'Want the git branch or session time on the bar too? Just ask Claude to add them.'
+          ],
+          prompts: [
+            'Install ccstatusline as my Claude Code status line and set it up — without opening its interactive menu — to show context percentage and model. Install Node first if it’s missing. Then tell me to restart.'
+          ],
+          example: {
+            label: 'What the status line shows',
+            body: 'Model Opus  |  Ctx 100K (50%)  |  Cost $0.43  |  main\n\nThe model you’re on, how much of the context window this session has used, running cost, and the git branch if you’re in one.'
+          }
+        },
+        {
+          title: 'Set up your Claude Code folder',
+          lead: 'Before your first real job, decide where the work lives. One folder called Claude Code inside your Dropbox or Google Drive, so it backs up as you go, and one folder per project inside it.',
+          steps: [
+            'Type the prompt below to create the folder structure.',
+            'To open a project: type <code>/exit</code> to close any session you have open.',
+            'Copy the project folder’s path — Mac: Option+right-click the folder → Copy as Pathname; Windows 11: right-click → Copy as path; Windows 10: Shift+right-click → Copy as path.',
+            'Open a new terminal window, type <code>claude</code>, a space, then paste the path in quotes, and press Enter.',
+            'Check the line above the prompt — it should show the project name, not your user folder. If it’s wrong, type <code>/exit</code> and paste the right path.'
+          ],
+          context: [
+            'Claude works from the folder you started it in. It reads what’s there, writes new files there, and remembers what happened there. Your work lives in your folders, not in the chat — the files are the output, not the transcript.',
+            'Put the Claude Code folder inside Dropbox or Google Drive (OneDrive and iCloud Drive work too) — not loose in Documents. Everything inside it then copies to the cloud as you work, so if a laptop dies or gets stolen, the whole setup is sitting in the cloud waiting for the next machine. The desktop sync app has to be installed and running for the folder to exist on your disk.',
+            'A project is anything with its own context — a client, your own business, a channel you run. One folder per project. Name them plainly, lowercase with hyphens — <code>client-acme</code>, not "Acme Corp Final v2" — you’ll be reading these names every day.',
+            'One question decides the structure: what do you switch between during your week? If it’s clients, one folder per client. If you run one brand across channels, one folder per channel.',
+            'Every project folder ends up with a plain-text <code>CLAUDE.md</code> at the top, which Claude reads automatically every time it starts there — let Claude draft a rough one at the end of your first real job.',
+            'Don’t move folders around by hand once you’ve started — files reference each other. Ask Claude to restructure instead and it re-points everything.',
+            'Once you’re running more than one session, name each terminal tab after its project — which folder you’re in is the thing that goes wrong most often.'
+          ],
+          prompts: [
+            'Make a folder called Claude Code inside my [Dropbox or Google Drive] folder. Inside it, make one folder for each of these projects: [your client or project names], and one called my-first-project for the training exercises. Then show me the structure.'
+          ],
+          example: {
+            label: 'What the folder structure looks like',
+            body: 'Dropbox/\n  Claude Code/\n    client-acme/\n    client-brightside/\n    my-business/\n    my-first-project/\n    sales/\n\nOpening a project:\nclaude "/Users/you/Dropbox/Claude Code/client-acme"\n\nThe quotes matter — folder names usually have spaces in them.'
+          }
+        },
+        {
+          title: 'Connect your platforms',
+          lead: 'An MCP is the bridge between Claude Code and a platform — Google Ads, Meta, Klaviyo, GA4, Shopify and dozens more. Connect one and Claude pulls live data and does the work in the platform, instead of you exporting CSVs.',
+          steps: [
+            'Go to <code>pipeboard.co/setup/connect</code> and sign in — free to start.',
+            'Copy the connector link for Google Ads (<code>https://google-ads.mcp.pipeboard.co/</code>) and Meta Ads (<code>https://meta-ads.mcp.pipeboard.co/</code>).',
+            'Go to <code>claude.ai/new#settings/connectors</code>, click <strong>Add custom connector</strong>.',
+            'Name it (e.g. "Pipeboard Google Ads") and paste the link, click <strong>Add</strong>.',
+            'Click <strong>Connect</strong> and sign in to the platform when it asks.',
+            'Add the other platforms the same way — TikTok, Snap, or whatever else you run. Connect every ad account, even the ones that never performed.'
+          ],
+          context: [
+            'MCP stands for Model Context Protocol — a connector that tells Claude what a platform can do and how to ask for it. No API calls to write, no query language to learn — you type what you want.',
+            'This is sanctioned use, not a grey area: connecting through an MCP or an API key works through each platform’s own official door, and is within Google, Meta and Klaviyo’s guidelines. What gets accounts flagged is tools that click around your account pretending to be you — this isn’t that.',
+            'Connectors arrive three ways — one-click (maintained by Anthropic or the platform: Klaviyo, Notion, Slack, Gmail, Calendar, Drive), third-party (a company like Pipeboard handles sign-in — the route for ad platforms), or self-hosted on your own machine (more setup, only when a specific job needs it). The live list is at <code>claude.ai/new#settings/connectors</code>.',
+            'Connect what you actually use, not everything you could — every connected MCP adds a description of itself to what Claude loads into memory each session, so more isn’t free.',
+            'For ad platforms specifically we use <code>Pipeboard</code>, not the platforms’ own connectors — members using those directly have hit rate limits and account flags, and Pipeboard’s sign-in and delivery across all four has been reliable since we moved to it.'
+          ]
+        },
+        {
+          title: 'Verify & troubleshoot your connection',
+          lead: 'Adding a connector in the browser is only half the job — Claude Code needs a restart to pick it up, and it’s worth testing before you rely on it for real work.',
+          steps: [
+            'Restart Claude Code so it loads the new connection: type <code>/exit</code>, then <code>claude</code> again to relaunch.',
+            'Run <code>/mcp</code> to confirm it’s listed and connected. If it shows as needing authentication, pick it in <code>/mcp</code> and follow the one-time sign-in.',
+            'Test it with a real pull before trusting it for client work — use the first prompt below.',
+            'Setting up a connector that isn’t Pipeboard? Type what you’re doing, in plan mode, and let Claude walk you through what to click before doing anything — the second prompt below is the template.'
+          ],
+          context: [
+            'If something breaks: connected but no data → disconnect and reconnect at <code>claude.ai/new#settings/connectors</code>, then restart Claude. Wrong account → log out of the wrong Google/Facebook login in your browser first, then reconnect. Not showing in <code>/mcp</code> → restart Claude; if still missing, type "update yourself to the latest version" and restart again. Google Ads jobs stalling mid-run → you’ve hit the shared API throttle Pipeboard uses for every user; wait a few minutes and ask again.',
+            'If a new connection sits in an approval queue: Pipeboard limits how many ad accounts it acts on at once. Go to <code>pipeboard.co/settings/slots</code> and give the account a slot, then ask again.'
+          ],
+          prompts: [
+            'Pull my Google Ads campaigns from the last 30 days through Pipeboard. Show me campaign name, spend and conversions in a table.',
+            '/plan Help me connect GA4 to Claude Code. Tell me the steps before you do anything.'
+          ],
+          example: {
+            label: 'What /mcp shows once you’re connected',
+            body: '> /mcp\n\nMCP servers — 3 connected\n\npipeboard-google-ads    connected\npipeboard-meta-ads      connected\npipeboard-tiktok-ads    connected\n\nAll connectors healthy. Ask me for Google Ads, Meta or TikTok data and I’ll pull it live.'
+          }
+        },
+        {
+          title: 'Choose your access route',
+          lead: 'Claude reaches a platform three ways — an MCP connector, a CLI Claude runs for you, or an API key in your .env file. Most of the time you don’t need to choose; Claude picks the best route, and you can steer it if it guesses wrong.',
+          steps: [
+            'Unsure which route fits a platform you haven’t connected yet? Ask directly — use the first prompt below with any platform names swapped in.',
+            'If Claude picks the wrong route, just tell it — e.g. type "use the API, not the connector, for this."',
+            'Want a standing preference? Add the second prompt below to your CLAUDE.md.'
+          ],
+          context: [
+            'MCP (connector): best for platforms with lots of everyday actions and data — ad platforms, analytics, email. The default for most work.',
+            'CLI: a small command-line tool Claude installs and runs itself when it needs to — GitHub’s, Supabase’s, Google Workspace’s. You never type these commands yourself.',
+            'API key: lives in your project’s <code>.env</code> file. For serious extraction — pulling years of history — the raw API often beats the connector, which isn’t built for that volume.',
+            'Cheapest to most expensive, roughly: database queries (already aggregated) → CLIs (near-zero idle cost) → MCPs with deferred loading (small idle cost, moderate per call) → large file reads (one big hit) → web scraping or raw HTTP (slowest and most fragile — a last resort).'
+          ],
+          prompts: [
+            'For Klaviyo, Google Ads and GitHub, tell me whether you’d use an MCP, a CLI or an API key, and why.',
+            'Add this to my CLAUDE.md: prefer a CLI over an MCP when both exist for the same job.'
+          ],
+          example: {
+            label: 'How Claude decides — no need to memorise this',
+            body: 'Pull the last 30 days of Klaviyo campaigns.   →  the connector\nPublish this report and give me the link.    →  the GitHub CLI\nPull every email we’ve sent since 2024.      →  the API key\nCreate a Google Doc with this content.        →  the Workspace CLI'
+          }
+        },
+        {
+          title: 'Set up your .env file',
+          lead: 'Every key you give Claude — API key, database key, token — lives in one plain-text file called .env in your Claude Code project folder. Keys never go through the chat.',
+          steps: [
+            'Type the first prompt below, in your Claude Code project folder, to create the file. No key yet? Leave the line empty; you’ll paste the value in once you have it.',
+            'Generate the key on the platform’s website (usually under Settings or Developers), and copy it.',
+            'Paste it in yourself after the <code>=</code> on its line, in your text editor, and save. Never paste a key into the Claude chat.',
+            'Back in Claude, verify it landed without exposing it — use the second prompt below.'
+          ],
+          context: [
+            'Never ask Claude to <code>cat</code>, <code>grep</code>, <code>echo</code> or open the file to "double-check" a key.',
+            'Can’t see the .env file? It’s hidden on purpose. Windows: in File Explorer, turn on View → Show → Hidden items. Mac: in Finder, press Cmd+Shift+. (period).',
+            'One .env at the top of your Claude Code folder covers every project inside it. A client whose keys must stay fully separate gets its own .env in its own folder.',
+            'Name keys for the platform, in capitals — <code>KLAVIYO_API_KEY</code>, <code>SHOPIFY_ADMIN_TOKEN</code> — you’ll be reading these names for months, so keep them obvious.'
+          ],
+          prompts: [
+            'In my Claude Code folder, create a .env file with one empty line for each key I’m about to add, named like this: KLAVIYO_API_KEY=. Add .env to .gitignore so it’s never shared, then open the file in my text editor. Don’t ask me for the values — I’ll paste them in myself — and never print them.',
+            'Check KLAVIYO_API_KEY is set in my .env by testing that it’s non-empty. Never cat, grep, echo or open the file — reply only "set" or "not set".'
+          ],
+          example: {
+            label: 'What a finished .env file looks like',
+            body: 'KLAVIYO_API_KEY=pk_live_5f2a9c...\nSHOPIFY_ADMIN_TOKEN=shpat_9d3e1b...\nGOOGLE_ADS_DEVELOPER_TOKEN=8vQmZ2...\nSUPABASE_URL=https://xzklmnop.supabase.co\nSUPABASE_SERVICE_ROLE_KEY=sb_secret_9f1c...\n\nOne name-value pair per line, no spaces, no quotes. This is the only place these values ever live — not in a prompt, not in a screenshot, not in CLAUDE.md.'
+          }
+        },
+        {
+          title: 'Connect every account',
+          lead: 'Once one platform works, connect everything you touch — including channels that never performed — then make asking Claude your default habit instead of switching to another tool.',
+          steps: [
+            'Connect every account you run, dead channels included.',
+            'Ask Claude the things you’d normally ask a team member — use the prompts below to start.',
+            'Keep the conversation going instead of starting over each time — pull a report, then ask it to expand on the part that worries you.',
+            'Run an audit early, then take every follow-up question to Claude instead of your team.',
+            'Try the daily-switch test once: for one full day, every time you leave Claude to paste something in from another tool, write it down. That list is your connection to-do.'
+          ],
+          context: [
+            'Paused campaigns and old creative are still context that makes later work better — a channel that "never converted" is still useful history once it\'s connected.',
+            'Brief the goal before the question — "profit has to go up but revenue can’t drop, now tell me what’s wrong in the account" gets a sharper answer than the bare question.'
+          ],
+          prompts: [
+            'What did we do in Google Ads last month, are there any issues in the Meta account right now, and how is the email program going? Pull whatever you need.',
+            'Which 5 ads have the highest spend and the worst cost per lead right now?'
+          ],
+          example: {
+            label: 'A plain-English question, answered',
+            body: '> Are there any issues in the Meta account I should know about?\n\nPulled the last 14 days from Meta through Pipeboard\n\n3 things worth your attention\n1. Two ad sets have sat in learning for 9 days — the daily budget is too thin for them to exit.\n2. The prospecting campaign’s frequency passed 4 this week. The audience is tiring.\n3. A paused ad set still has a budget scheduled to restart on Monday.\n\nWant me to plan a fix for any of these? Nothing changes until you say so.'
+          }
+        },
+        {
+          title: 'Scope connectors per project',
+          lead: 'Each project gets its own set of MCPs through a .mcp.json file in the project folder — fewer tokens, no cross-client leakage, and each connection signs in on its own.',
+          steps: [
+            'Tell Claude what the project needs and it creates <code>.mcp.json</code> for you — use the prompt below to set up read-only access to a connector.',
+            'If a login covers several accounts (a Google Ads manager account, a Meta Business Manager), add a "# Client context" block to the project’s CLAUDE.md naming which one this project means.',
+            'Check what’s live anytime with "what MCPs are active in this session?" or <code>/mcp</code>.',
+            'Switch one off mid-session without losing the setup: open <code>/mcp</code> and toggle it off — it comes back next time.'
+          ],
+          context: [
+            'Connectors you add on the claude.ai page follow your account into every session. <code>.mcp.json</code> is for connectors that belong to one project only — ask "which of my connectors are account-wide and which are this project’s?" if you’re not sure.',
+            'Typical setups: an ecommerce client connects Google Ads and Meta through Pipeboard, plus Klaviyo, GA4, Shopify and Supabase for memory. A lead-gen client connects Google Ads, LinkedIn Ads, Search Console, GA4, the CRM and Supabase. An SEO project connects Search Console, DataForSEO, GA4 and Supabase.',
+            'Keep <code>.mcp.json</code> in the project so anyone else who opens it gets the same connectors, keep <code>.env</code> out of anything shared since sign-in stays per machine, and review <code>.mcp.json</code> every few months to remove what’s stopped being used.'
+          ],
+          prompts: [
+            'Set up the Google Ads MCP in read-only mode for this project. I don’t want anything changed in the account yet.'
+          ],
+          example: {
+            label: 'A project folder with client context',
+            body: 'my-project/\n  CLAUDE.md\n  .mcp.json        the connectors this project uses\n  data/\n  drafts/\n\nIn CLAUDE.md:\n# Client context\nGoogle Ads customer ID: 123-456-7890\nMeta Ads account ID: act_1234567890\nKlaviyo account: client-name-production'
+          }
+        },
+        {
+          title: 'Approve each step first',
+          lead: 'Claude Code asks before it acts — every time it wants to create or change a file, run a command or reach a website, it stops and shows you a prompt with 3 options. For your first days or weeks, run in Manual mode so you see every prompt and approve each step yourself.',
+          steps: [
+            'Type the prompt below to make every session start in Manual.',
+            'When Claude shows an approval prompt, read what it wants to do, then type the number or arrow down and press Enter — 1: yes, do it this once; 2: yes, and don’t ask again for this kind of action; 3: no, and tell Claude what to do differently.',
+            '<code>Shift+Tab</code> moves between modes mid-session — watch the status bar at the bottom to see which one you’re in.',
+            'Move to auto once you notice you’ve stopped reading the prompts because you already know what they’ll say. Then type "set my default permission mode to auto."'
+          ],
+          context: [
+            'Saying no is free — Claude explains what it wanted and you choose again. Saying yes without reading is how expensive mistakes happen.',
+            'In Manual you watch which files Claude creates, which commands it runs, what it reaches out to. After a week or two you’ll know its habits — that judgement is what makes auto mode safe later, and you can’t build it while the prompts are hidden.',
+            'Power-user tips: type the number rather than arrowing to it; take "don’t ask again" for the session, not the project, until you know the pattern; <code>Esc</code> cancels a prompt you didn’t mean to trigger.'
+          ],
+          prompts: [
+            'Set my default permission mode to manual.'
+          ],
+          example: {
+            label: 'The approval prompt',
+            body: '● Claude wants to create competitor-scan.md\n\nDo you want to create competitor-scan.md?\n1. Yes\n2. Yes, and don’t ask again for file changes this session\n3. No, and tell Claude what to do differently\n\n↑↓ to move · Enter to choose · or type the number\n\nManual mode · Shift + Tab to change'
+          }
+        },
+        {
+          title: 'Read vs write access',
+          lead: 'Read access is safe — pull data, report, analyse, be open with it. Write access is real — create, pause, send, delete. Keep every connector read-only until you’ve earned trust with it, and put one rule in your memory file before you ever switch a write on.',
+          steps: [
+            'Add the safety line below to your project’s master CLAUDE.md before you switch any connector to write access.',
+            'Switch writes on only when: you specifically need Claude to change something, you’ve done a month of read-only work with it and trust what it pulls, and you’re ready to read and approve every single change before it happens.',
+            'The moment a write-capable connector is on, switch to Manual mode (<code>Shift+Tab</code>) so every live action needs your yes.',
+            'Enable write access deliberately, one connector at a time — use the second prompt below.',
+            'Earn the trust first: do the same action yourself 2–3 times so you know what correct looks like, then watch Claude do it once with full prompts and check the result, repeat 2–3 times, and only then let it run several in a row.',
+            'Approve like it matters: check the exact action, the scope (one thing or forty?), whether it’s reversible, and the impact — how much spend, how many customers — then approve.',
+            'Taking it back is one sentence — the third prompt below returns a connector to read-only, and you can always switch it on again later.'
+          ],
+          context: [
+            'Read is cheap to get wrong: a bad read wastes a few tokens and nothing else. Write is expensive and public — Google Ads pauses the wrong campaign and a client’s best product loses hours of spend; Meta launches with the wrong cap; Klaviyo sends a half-finished draft to a live segment; Slack posts to the wrong channel in front of everyone.',
+            'Sensible defaults by platform: Google Ads and Meta — read-only until you’re optimising daily, writes through Pipeboard approved one at a time. Klaviyo — read-only, every send approved manually, always. GA4 and Search Console — read-only is all you’ll ever need. Notion — read/write is fine, still watch the prompts. Slack and Gmail — read often, write rarely, drafts not sends. Shopify — read-only for analysis, writes rare and always approved.'
+          ],
+          prompts: [
+            'Add this to my CLAUDE.md: Never publish, launch, pause, send, change a budget or delete anything on a live platform without my explicit confirmation first. Always ask.',
+            'Enable write access for the Google Ads MCP in this project. I want you to be able to pause campaigns and adjust budgets, but only with my explicit approval on each action, every time.',
+            'Remove write access from the Google Ads MCP in this project. Back to read-only.'
+          ],
+          example: {
+            label: 'Read vs write, at a glance',
+            body: 'READ-ONLY (default)          WRITE ACCESS (opt-in)\nPull campaign data            Pause wrong campaign — lost revenue\nQuery performance metrics     Wrong spend cap set\nRead sent email campaigns     Send draft to a live segment\nGet analytics                 Post to the wrong Slack channel\nList products, customers      Change DNS / domain settings\n\nMistakes: cheap (wasted tokens)     Mistakes: expensive and public'
+          }
+        },
+        {
+          title: 'Set up project context',
+          lead: 'Add a CLAUDE.md file at the root of each recurring project so Claude reads context automatically instead of you re-explaining it every session.',
+          steps: [
+            'Create a plain text file literally named <code>CLAUDE.md</code> at the project’s root (any text editor works, or create it from inside Claude Code itself).',
+            'Launch Claude Code in the project and use the prompt below to draft one, then read the result over and correct anything wrong before saving.',
+            'Add by hand: the platform/stack (WordPress, custom build, CAWB, Dealer Connect, etc.), coding conventions, and any client-specific constraints.',
+            'Flag areas not to touch — e.g. shared components used across multiple dealer sites — as a clearly labelled section, e.g. "Do not modify:".'
+          ],
+          context: [
+            'Never put credentials, API keys or passwords into this file — it often gets committed to the repo and read by anyone with access.',
+            'Claude Code picks this file up automatically every time you launch it in that folder — no need to paste context into the chat.'
+          ],
+          prompts: [
+            'Look through this project and draft a CLAUDE.md describing the stack, structure and conventions.'
+          ],
+          example: {
+            label: 'What a real CLAUDE.md looks like',
+            body: '# Riverside Dental — microsite\nStack: WordPress (Astra theme, Elementor Pro), hosted on WP Engine.\nConventions: PHP follows WordPress coding standards. SCSS compiles via a Gulp task — never edit the compiled CSS directly.\n\nDo not modify:\n- /wp-content/themes/dealer-shared/ — shared across 12 dealer sites, a change here affects every client.\n- The GA4 / GTM snippet in header.php.\n\nClient constraints:\n- The booking widget is a locked third-party embed (SimplePractice) — don’t alter its markup, only the layout around it.'
+          }
+        },
+        {
+          title: 'Your first real job',
+          lead: 'Your first real job comes off your own to-do list — not a toy exercise. Pick something that’s been sitting there a while, open Claude in the project folder, and work it through, back and forth, the way you’d brief a person across the desk.',
+          steps: [
+            'Pick a job that passes 3 tests: it’s been on your list a while, it’s annoying, and you know what done looks like.',
+            'Don’t go looking for data to hand it — use what you’d have used doing it by hand: the last version, a screenshot, a file already on your computer. Type where it is, or drag it in.',
+            'Open a new terminal window, type <code>claude</code> and paste the project folder’s path after it. Check the line above the prompt says the project name.',
+            'Type the job in, with the context. Use the first prompt below as your template, or pick whichever of the other examples matches the kind of job it is.',
+            'Answer Claude’s questions before it starts — it’ll ask what it’s missing.',
+            'Go back and forth on the first draft: "shorter," "the client’s a plumber, not a law firm," "that number’s wrong, it’s 40," "the third section is the point, lead with it." One instruction at a time.',
+            'Don’t stop at one — ask the follow-up you’d ask a person: "now turn that into an email to the client," "do the same for the other 3 clients."',
+            'Before you close, ask Claude for a short CLAUDE.md for this folder — what the project is, who it’s for, and the one rule that always applies.'
+          ],
+          context: [
+            'Good first jobs: a proposal you owe someone, a competitor scan you’ve meant to do for months, a monthly report template, a plan you keep putting off, product descriptions, an FAQ page, a client folder that needs sorting — anything you’d normally open Word or a spreadsheet for.',
+            'You never open the file to fix it yourself — you type what’s wrong and Claude fixes it. The rule for your first month: anything you’d have done in Word or a spreadsheet, do it here instead.',
+            'Sharing it: the file lives on your computer, visible only to you. Putting a report or page live on a link a client can open is covered later in this track.',
+            'Power-user tips: queue several asks in one message and Claude works through them in order; name the output file yourself — "save it as march-summary.md"; set the standard in the ask — "the way a senior analyst would," "under 200 words," "as a table I can paste into a doc."'
+          ],
+          prompts: [
+            'Here’s a job that’s been on my list for weeks: [what it is, who it’s for, what done looks like]. Ask me anything you need to know before you start, then do it.',
+            'Last quarter’s version is in this folder. Rebuild it for this quarter — keep the structure, update everything that’s changed, ask me for anything you can’t find, flag anything you’re not sure about, and save it next to the original.',
+            'This has been on my list since [month]: [what it is, who it’s for, what done looks like]. Ask me the 5 questions you need answered before you start, then write the first draft and save it as draft.md.',
+            'Go to [competitor website] and 2 others in the same category. Tell me what each one leads with, what they charge, what proof they show and what they don’t say. Then tell me where the gap is for us. Save it as competitor-scan.md.'
+          ],
+          example: {
+            label: 'A real back-and-forth, start to finish',
+            body: '> Here’s a job that’s been on my list for weeks: the Q3 review for this client. Same shape as the Q2 one in this folder, for their marketing lead, and done means a draft I can send on Friday. Ask me anything you need to know before you start, then do it.\n\n● Read q2-review.pdf · brand-guide.pdf\n\n2 things before I start\n1. Q2 had 9 sections. Keep all 9, or drop the 2 that were mostly filler?\n2. Do you want the Q3 numbers from you now, or shall I leave them as marked gaps to fill?\n\n> Drop the 2. Leave the numbers as gaps, I’ll read them out after.\n\n● Wrote q3-review-draft.md · 7 sections · 1,180 words\nFirst draft saved next to the Q2 version. Sections 1–3 keep the Q2 wording updated for Q3; 4–7 are new. 5 numbers are marked [Q3 figure].\n\n> Shorter — the lead skims. And section 3 is the point, open with it.\n\n● Rewrote q3-review-draft.md · 7 sections · 740 words\nSection 3 now opens the draft. Cut 440 words, kept every number and gap.'
+          }
+        },
+        {
+          title: 'Bring files in, get files out',
+          lead: 'Claude reads the files in the folder it’s running in. Drag a file into the terminal window to hand it over, paste a screenshot, or type @ and pick a file — whatever Claude makes lands in the same folder.',
+          steps: [
+            'Put it in the folder and name it — "read data/brief.pdf and pull out every deadline it mentions."',
+            'Or drag it in from Finder/File Explorer — its path pastes into the prompt, works for any file anywhere on your computer.',
+            'Or type <code>@</code> and start typing the file name — a list appears, pick it, keep talking.',
+            'Or paste a screenshot — Mac: Ctrl+Cmd+Shift+4 to copy an area to the clipboard, then <code>Ctrl+V</code> in Claude Code (not Cmd+V, which the built-in Terminal uses for text); Windows: Win+Shift+S, then <code>Alt+V</code>.',
+            'To organise as you go, type "make a data folder and a drafts folder in here" — everything you drop in goes in <code>data</code>, and you tell Claude to save into <code>drafts</code>.'
+          ],
+          context: [
+            'The folder is the workspace: files on your computer, inside that folder, not attachments in a chat. Claude can go online when you point it at a page, but whatever it makes lands in the folder.',
+            'What Claude reads: text and markdown (the cleanest format for briefs and notes); CSV; Word and Excel (Claude installs a small helper the first time, or save as PDF/CSV to skip that); PDF (type which pages for long ones — "read pages 3 to 8"); images (PNG, JPG, screenshots); HTML, JSON and every kind of code. Not video or audio — get a transcript first, then hand Claude the transcript.',
+            'Big files cost more: every file Claude reads goes into its working memory for the session, and a 50,000-row export fills that fast. Ask for a slice first — "read the first 200 rows and tell me the columns" — then widen.',
+            'Files out: whatever Claude makes lands in the folder. Name it yourself — "save it as drafts/march-summary.md." Type "open it" and Claude opens the file for you.',
+            'Power-user tips: several files, one ask — "read data/brief.md, data/competitors.csv and data/brand-guide.pdf, then summarise all 3"; "show me what files are in this project" when you’ve lost track; drag an entire folder in and type "read everything in there."'
+          ],
+          prompts: [
+            'Read every file in this folder and tell me what’s here, one line each.'
+          ],
+          example: {
+            label: 'Dragging a file in',
+            body: '> Summarise this file in 5 bullets: /Users/user/Downloads/email-campaigns-export.csv\n\nWorks for any file anywhere on your computer — not just the project folder.'
+          }
+        },
+        {
+          title: 'Plan first, then run',
+          lead: 'For anything bigger than a one-liner, put Claude in plan mode first — press Shift+Tab until the status bar says plan mode, or start the request with /plan. Type what you want, answer its questions, approve the plan, then let it run.',
+          steps: [
+            'Press <code>Shift+Tab</code> until the status bar says plan mode, or start one request with <code>/plan</code> — or just type "make a plan first and ask for my approval before you start."',
+            'Type what you want — use the prompt below.',
+            'Answer the questions Claude asks before it starts.',
+            'Approve the plan to run it, or tell Claude what to change first.'
+          ],
+          context: [
+            'In plan mode Claude only reads and thinks — nothing is written or changed until you approve. The status bar shows "plan mode on" while you’re in it.',
+            'Once you approve, Claude executes back in whichever mode you came from — Manual means you approve each step as it goes, auto means it runs end to end with a safety check in the background.',
+            'Plan for anything with more than one moving part, anything you’re doing for the first time, anything that could be read 2 ways, or anything for a client. Just ask directly for the trivial stuff — "fix this typo," "rename these 5 files." When in doubt, plan.',
+            'The never-go-live rule from the read-vs-write step still applies here — the moment Claude is connected to an ad account or an email platform, that rule is what keeps auto mode safe.',
+            'Power-user tips: make plan mode the reflex, not the exception; <code>Shift+Tab</code> again leaves plan mode without approving anything; use it to explore an idea with nothing at stake — "plan how you’d restructure this folder"; <code>Esc</code> stops Claude mid-action at any time without breaking the session.'
+          ],
+          prompts: [
+            '/plan Build me a one-page summary of the export in this folder, for a client who cares about profit, not revenue. Ask me anything you need to know before you start.'
+          ],
+          example: {
+            label: 'A plan, before anything runs',
+            body: '> /plan Build me a one-page summary of the export in this folder, for a client who cares about profit, not revenue. Ask me anything you need to know before you start.\n\nHere’s how I’d approach it\n1. Read ads-export-august.csv and work out which columns carry cost and return\n2. Lead with margin and cost per lead, drop impressions and clicks\n3. One page: 3 headline numbers, 5 findings, 3 next steps\n4. Save it as drafts/august-summary.md\n\n? Before I start:\n– Do you have a margin figure per product, or should I work from cost per lead?\n– Is this going to the client as-is, or are you editing it first?\n\nApprove the plan to run it, or tell me what to change.\n\n◦ plan mode on · shift+tab to cycle'
+          }
+        },
+        {
+          title: 'Review like a PR',
+          lead: 'Treat every change the same way you’d review a junior developer’s pull request — read it before it goes anywhere near a live client site.',
+          steps: [
+            'Read the diff Claude shows you (the exact lines changed) before applying it — don’t accept just because it looks plausible.',
+            'On a git-based project, run <code>git diff</code> afterwards, or push to a branch and review it through your normal GitHub/GitLab pull request flow before merging.',
+            'Check client-specific constraints weren’t missed — ownership terms, shared components, tracking code — the things you flagged in CLAUDE.md.',
+            'If a change doesn’t make sense, ask Claude to explain it in plain language before deciding whether to keep it.'
+          ],
+          context: [
+            'Never let a task ship straight to a live client site without a human reading the diff first.'
+          ]
+        },
+        {
+          title: 'Scale up',
+          lead: 'Once you trust the pattern on small tasks, hand over larger and more autonomous work — and start reaching for the fuller connector stack as jobs call for it.',
+          steps: [
+            'Brief bigger tasks the same way, just with more scope in the request — multi-file refactors, larger feature builds, cross-project template rollouts.',
+            'Connect Tier 1 in one sitting — "connect Drive, Gmail, Calendar, Slack and Notion" — and approve each as it comes.',
+            'Add Pipeboard and DataForSEO (Tier 2) if you run paid media or SEO. Leave Tier 3 until a specific job actually needs it.',
+            'Use the prompt below any time you want the current picture of what’s connected.'
+          ],
+          context: [
+            'Keep CLAUDE.md files current as project conventions change — stale context leads to worse first drafts. Share a structure or prompting pattern that works well with the team rather than everyone re-inventing it.',
+            'Remember it’s per project, not global, and read-only until you trust it — the same rules from earlier steps apply as you add more.',
+            'Some tools connect through an API key in <code>.env</code> instead of an MCP at all — image generation, deep-audit keys for specific platforms. Add those as you go.',
+            'The full stack is grouped into 3 tiers by setup effort — see the tier breakdown below.',
+            'The account-mining workflow that turns 18 months of campaign history into a style guide, then writes forward content from it, is covered in full on the marketing & accounts track — it’s the same connectors doing the reporting and content work either way.'
+          ],
+          prompts: [
+            'List every MCP I have connected and one line on what each can do.'
+          ],
+          example: {
+            label: 'The full connector stack, by tier',
+            body: 'TIER 1 — one-click (sign-in handled, no dev setup)\nGoogle Drive — create, read, search, organise files. Creates new Docs/Sheets but can’t edit cells in an existing Sheet (Tier 3).\nGmail — search threads, read messages, draft replies from thread history, apply labels.\nGoogle Calendar — events, scheduling, suggest a time, pull the week into a session.\nSlack — read channels, post messages, search, summarise a thread.\nNotion — notes, databases, client briefs, content pipelines.\nSupabase — the memory database; set up with 2 keys in .env, not from this page.\nKlaviyo — flows, campaigns, segments, metrics, templates. Deep extraction falls back to the API key.\nMeta Ads — reads account context and insights. Writes go through Pipeboard (Tier 2).\nFathom (meeting notes) — transcripts and call summaries without rewatching.\nFigma — design context, screenshots, tokens, design-to-code work.\n\nTIER 2 — third-party (free vendor account, vendor handles sign-in)\nPipeboard (Google Ads, Meta, TikTok, Snap) — the write path for paid media: campaigns, ad sets, keywords, budgets, bids, pauses, copy edits. Approve each step.\nDataForSEO — keyword research, search results, backlinks, domain analytics. Cents per query.\n\nTIER 3 — custom (your own developer project, heavier one-time setup)\nGA4 — sessions, conversions, traffic, ecommerce events. Needs a Google Cloud project.\nGoogle Search Console — search performance, indexing, sitemaps, query analysis.\nGoogle Merchant Center — product feed health, Shopping ads diagnostics.\nGoogle Sheets — writes into cells and batch-updates, unlike the Drive connector.\nGoogle Docs — inserts and formats text in an existing doc, unlike the Drive connector.\nLinkedIn Ads — campaigns, creative, lead forms, conversion tracking. Approval can take a few days.'
+          }
+        },
+        {
+          title: 'When it goes wrong',
+          lead: 'Something will break in your first week. The fix is nearly always one of 4 moves.',
+          steps: [
+            'Screenshot it, paste it in: an error in the terminal, a red banner in a platform, a design that came out wrong — screenshot it, paste it into Claude (Ctrl+V, or Alt+V on Windows), then type the prompt below.',
+            'Session gone? Type <code>claude --continue</code> in the terminal, inside the same project folder, to reopen the most recent session right where it stopped. <code>claude --resume</code> lets you pick from a list instead. Already inside Claude? Type <code>/resume</code>.',
+            'Claude says it can’t? Rephrase the ask — "is there another way to do this?", "plan how you’d do it if you had to," or ask it to check its own documentation. Be stubborn.',
+            'Heading the wrong way? Press <code>Esc</code> — it stops mid-action without breaking the session, and you type what to do instead.'
+          ],
+          context: [
+            'When Claude isn’t listening — doing something other than what you asked, or forgetting something you just said — 3 quick checks in order: which folder is it in ("what folder are you working in?"); how specific was the ask ("make the report better" gets a guess, "lead with margin, drop the impressions chart, keep it to one page" gets the report); how full is the status line — past about half, Claude starts forgetting, so start a fresh session.',
+            'Before Claude is running: an error during install, before Claude exists on your machine, is the one case it can’t help you with — screenshot it into claude.ai in your browser instead.',
+            'Ask Claude about Claude: it carries its own documentation. "How do I paste an image?", "what does plan mode do?" — it answers from the docs. <code>/help</code> lists every command.',
+            'Still stuck after the 4 moves? Raise it with your team lead or post it in the team channel — the question you’re stuck on is one someone else is about to ask too.',
+            'Power-user tips: <code>Esc</code> twice rewinds — clears what you were typing, or steps back through the conversation; <code>/btw</code> asks a side question without adding it to the conversation; the up arrow brings back your previous prompt to fix and resend.'
+          ],
+          prompts: [
+            'Here’s a screenshot of what just happened. Tell me what went wrong and fix it.'
+          ],
+          example: {
+            label: 'Recovering a lost session',
+            body: '> /resume\n\nResume a session\n2 hours ago — I’ve put an export from one of my platforms in this folder. Read it...\nYesterday — Read every PDF in this folder. Give me a one-page summary...\n3 days ago — Look at every file in this folder. Propose a structure that groups...\n\nUp and down to choose, Enter to resume. Nothing is lost when a window closes.'
+          }
+        }
+      ]
+    },
+    mkt: {
+      label: 'Marketing & Accounts',
+      sub: 'You work in reports, proposals, copy and content — no coding required. Claude Cowork (or Claude chat) drafts alongside you while you stay in control of what actually goes to a client.',
+      steps: [
+        {
+          title: 'Get access',
+          lead: 'Confirm your Claude Cowork / Claude access is set up before starting client work.',
+          steps: [
+            'Check with your manager which product you’ve been given — Claude Cowork (a desktop app) or Claude.ai in the browser — and get the sign-in link/invite for CA’s workspace.',
+            'Sign in with your CA email. If you’re asked for a personal vs. work account, always choose the CA workspace account.',
+            'Start a new chat (or a new "Project" if that feature is available to you) as a test — confirm it’s connected to the CA workspace, not a personal account.',
+            'Confirm you can attach a file: try uploading any test document.'
+          ],
+          context: []
+        },
+        {
+          title: 'Connect Google Ads & Meta',
+          lead: 'Reporting, audits and account work are stronger from live data than from a CSV someone exported last week. Connect Google Ads and Meta once, through Pipeboard, and every future report can pull straight from the account.',
+          steps: [
+            'Go to <code>pipeboard.co/setup/connect</code> and sign in — free to start.',
+            'Copy the link for Google Ads (<code>https://google-ads.mcp.pipeboard.co/</code>) and Meta Ads (<code>https://meta-ads.mcp.pipeboard.co/</code>).',
+            'Go to <code>claude.ai/new#settings/connectors</code>, click <strong>Add custom connector</strong>.',
+            'Name it (e.g. "Pipeboard Google Ads") and paste the link, click <strong>Add</strong>.',
+            'Click <strong>Connect</strong> and sign in to the platform when it asks. Repeat for Meta.',
+            'Connect every account on the client roster, including paused or underperforming channels.',
+            'Once connected, ask the questions you’d normally ask a team member — use the prompts below.'
+          ],
+          context: [
+            'This is sanctioned use, not a grey area — connecting through an official connector works through each platform’s own approved door. It’s within Google, Meta and Klaviyo’s guidelines; what gets accounts flagged is tools that click around pretending to be you.',
+            'We use <code>Pipeboard</code> rather than the platforms’ own connectors — one sign-in covers Google Ads, Meta, TikTok and Snap, and it’s what we’ve found reliable.',
+            'If it looks connected but nothing comes back: disconnect and reconnect at <code>claude.ai/new#settings/connectors</code>, then start a fresh chat. If it pulled the wrong account, log out of the wrong Google or Facebook login in your browser first, then reconnect.',
+            'These connectors are read-only by default — pulling data and reporting is safe. Anything that would change a live account (pausing a campaign, adjusting a budget) needs write access switched on deliberately, which is covered on the development track and should only happen with account-owner sign-off.'
+          ],
+          prompts: [
+            'What did we do in Google Ads last month, are there any issues in the Meta account right now, and how is the email program going? Pull whatever you need.',
+            'Which 5 ads have the highest spend and the worst cost per lead right now?'
+          ],
+          example: {
+            label: 'A plain-English question, answered',
+            body: '> Are there any issues in the Meta account I should know about?\n\nPulled the last 14 days from Meta through Pipeboard\n\n3 things worth your attention\n1. Two ad sets have sat in learning for 9 days — the daily budget is too thin for them to exit.\n2. The prospecting campaign’s frequency passed 4 this week. The audience is tiring.\n3. A paused ad set still has a budget scheduled to restart on Monday.\n\nWant me to plan a fix for any of these? Nothing changes until you say so.'
+          }
+        },
+        {
+          title: 'Build your standing brief',
+          lead: 'Keep a short standing brief on hand for each recurring client rather than re-explaining context every session. This is just a text note you reuse — not a special feature.',
+          steps: [
+            'Write it once, in a document or a note you can copy from: objective, audience, tone, current agreed scope.',
+            'Include a short "what NOT to claim" list — e.g. don’t call a result a guaranteed lead, don’t reference a lock-in on a month-to-month contract.',
+            'At the start of a new chat, paste this brief in as your first message (or attach it as a file) before asking for the actual work.',
+            'If your plan has "Projects" (a space that keeps files and instructions attached across chats), save the brief there once instead of re-pasting it every time — check with your manager whether this is available on your account.'
+          ],
+          context: [
+            'Update it whenever the account changes — don’t reuse a stale brief from months ago.'
+          ],
+          example: {
+            label: 'What a filled-in brief looks like',
+            body: 'CLIENT: Riverside Dental — SEO + Google Ads retainer\nOBJECTIVE: Grow qualified appointment bookings from new patients within a 15km radius.\nAUDIENCE: Local adults 25–55, price-aware but not bargain-hunting; prioritise convenience and trust.\nTONE: Warm, plain-language, never clinical-sounding. No jargon.\nCURRENT SCOPE: SEO (blog + local pack) + Google Ads Search only, no Display. Month-to-month, no lock-in.\nWHAT NOT TO CLAIM: Don’t promise a specific number of new patients. Don’t call any keyword ranking “guaranteed.” Don’t reference a contract term — it’s month-to-month.\nLAST UPDATED: 14 Sept 2026 by J. Cole'
+          }
+        },
+        {
+          title: 'Draft, don’t send',
+          lead: 'Use Claude for the first 80% — structure, pacing commentary, copy options — then apply your own account knowledge for the rest.',
+          steps: [
+            'To bring in a raw export (a Google Ads/Meta CSV, a rate card, a past proposal): use the attach/upload control in the message box (a paperclip or "+" icon), or drag the file straight into the chat window.',
+            'Be explicit about the output you want in the same message — format, length, who it’s for — e.g. "turn this into a one-page monthly report for the client, plain language, flag anything that dropped."'
+          ],
+          context: [
+            'Claude can read CSVs, PDFs, Word docs, Excel files and images directly — you don’t need to retype the numbers.',
+            'Good early tasks: turning a raw ad-platform export into a first-draft summary, structuring a proposal outline, drafting ad copy variants.',
+            'The last 20% — sign-off numbers, relationship nuance, anything that changed last week — is still yours to add before it goes anywhere.'
+          ]
+        },
+        {
+          title: 'Be specific about evidence',
+          lead: 'Tell Claude what kind of evidence you\u2019re giving it, and flag gaps rather than letting it fill them in.',
+          steps: [
+            'Type it plainly in your prompt — e.g. "this export is from March, treat anything after that as unknown" or "this proposal was sent but we don’t know if it was accepted."',
+            'Add an explicit instruction such as "if a number isn’t in what I’ve given you, say it’s missing — don’t estimate it," especially for anything client-facing.',
+            'If a draft comes back with a figure you don’t recognise, ask where it came from before using it.'
+          ],
+          context: []
+        },
+        {
+          title: 'The one-prompt unlock',
+          lead: 'The single highest-leverage move once a platform’s connected: have Claude read your account’s real history and build a performance-based style guide from what worked, then write forward from it. Refreshed monthly, not written once and forgotten.',
+          steps: [
+            'Pull the account’s campaign history and build the style guide — use the first prompt below.',
+            'Once the guide exists, brief every new piece against it and write forward — use the second prompt below to generate a batch.',
+            'Refresh it monthly against real performance — use the third prompt below, on a standing calendar reminder.'
+          ],
+          context: [
+            'This replaces the hardest part of the job — reading years of campaigns yourself to work out what actually performed. Claude can read all of it and rank it by results, not by opinion.',
+            'One guide per channel — a Google Ads style guide is not a Meta style guide is not an email style guide. Don’t merge them into one master document.',
+            'If the account has real spend history, the guide builds itself from performance. If it’s a fresh account with nothing to mine, build the guide the other way — brand voice from your own material, plus a competitor scan, plus the language your customers actually use in reviews.',
+            'This is also where reporting gets lighter: once the connectors are in, a report is a sentence — "pull last month’s Meta performance by campaign and write it up the way the client likes." Live data every time you ask, no dashboard subscription to keep current.'
+          ],
+          prompts: [
+            'Pull every email campaign we’ve sent in the last 18 months with its open rate, click rate and revenue. Work out what the top 20% have in common — subject lines, structure, length, tone, offers — and build me a style guide for this channel based on what performed, not on what I think works. Save it as data/style-guide-email.md.',
+            'Using data/style-guide-email.md, write me the next 6 months of email campaigns — 2 a week, matched to what performed. Save them as drafts in the drafts folder.',
+            'Update data/style-guide-email.md based on the last 30 days of performance. Anything that worked goes in. Anything that underperformed comes out. Show me what changed.'
+          ],
+          example: {
+            label: 'Claude building the guide from real history',
+            body: '> Pull every email campaign we’ve sent in the last 18 months with its open rate, click rate and revenue. Work out what the top 20% have in common and build me a style guide for this channel based on what performed. Save it as data/style-guide-email.md.\n\nPulled 214 campaigns over 18 months through the Klaviyo API\n\nThe top 20% share 5 patterns\n1. Subject lines under 6 words that name the product, not the offer\n2. One idea per email — the single-topic sends out-click the roundups 3 to 1\n3. A plain-text opening line before any image\n4. The offer in the second paragraph, never the first\n5. A single link, repeated twice, no button rows\n\nSaved data/style-guide-email.md — 1,140 words, with the 10 best-performing emails included in full.'
+          }
+        },
+        {
+          title: 'Route for review',
+          lead: 'Nothing customer-facing goes out on a first draft.',
+          steps: [
+            'Run your own quick pass first: does every number trace back to a real source? Does any claim overstate what was agreed? Does the tone match this client?',
+            'Send the draft to the account owner the normal way — email, Slack, whatever CA already uses — with a short note on what to check.',
+            'Only send/publish once a person with account knowledge has signed off.'
+          ],
+          context: [
+            'Claude doesn’t have visibility into what changed on a call last week — that’s exactly what human sign-off catches.'
+          ],
+          example: {
+            label: 'What a review note looks like',
+            body: 'Draft attached — here’s what to check: the Q3 spend figure in para 2 is from the March export, not live, so double-check it hasn’t moved. I flagged the “strong result” line on email open rate — worth a gut check against how the client actually reacted on last week’s call before this goes out.'
+          }
+        }
+      ]
+    }
+  };
+  var pathRow = document.getElementById('path-row');
+  var detailPanel = document.getElementById('detail-panel');
+  var wfHeading = document.getElementById('wf-heading');
+  var wfSub = document.getElementById('wf-sub');
+  var progressLabel = document.getElementById('progress-label');
+  var progressFill = document.getElementById('progress-fill');
+
+  function renderPath(track) {
+    var data = CONTENT[track];
+    var active = state.activeStep[track] || 0;
+    var done = state.done[track] || [];
+
+    pathRow.innerHTML = '';
+    data.steps.forEach(function(step, i) {
+      var node = document.createElement('button');
+      node.type = 'button';
+      node.className = 'path-node' + (i === active ? ' active' : '') + (done.indexOf(i) > -1 ? ' done' : '');
+      node.setAttribute('aria-label', step.title);
+
+      var connector = document.createElement('span');
+      connector.className = 'connector' + (i > 0 && done.indexOf(i - 1) > -1 ? ' done' : '');
+
+      var circle = document.createElement('span');
+      circle.className = 'node-circle';
+      circle.textContent = done.indexOf(i) > -1 ? '\u2713' : (i + 1);
+
+      var label = document.createElement('span');
+      label.className = 'node-label';
+      label.textContent = step.title;
+
+      node.appendChild(connector);
+      node.appendChild(circle);
+      node.appendChild(label);
+
+      node.addEventListener('click', function() {
+        state.activeStep[track] = i;
+        saveState(state);
+        render(track);
+      });
+
+      pathRow.appendChild(node);
+    });
+  }
+
+  function renderDetail(track) {
+    var data = CONTENT[track];
+    var active = state.activeStep[track] || 0;
+    var step = data.steps[active];
+    var done = state.done[track] || [];
+    var isDone = done.indexOf(active) > -1;
+
+    var promptsHtml = (step.prompts || []).map(function(p, pi) {
+      var safe = p.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      return '<div class="prompt-box">' +
+        '<p class="prompt-label">Type this to Claude</p>' +
+        '<pre id="prompt-text-' + active + '-' + pi + '">' + safe + '</pre>' +
+        '<button type="button" class="prompt-copy-btn" data-prompt-idx="' + pi + '">Copy</button>' +
+        '</div>';
+    }).join('');
+
+    var exampleHtml = '';
+    if (step.example) {
+      var safeEx = step.example.body.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      exampleHtml = '<div class="example-box">' +
+        '<p class="example-label">' + (step.example.label || 'What this looks like') + '</p>' +
+        '<div class="example-body">' + safeEx + '</div>' +
+        '</div>';
+    }
+
+    var howtoHtml = '';
+    if (step.steps && step.steps.length) {
+      howtoHtml = '<p class="section-label howto-label">How to do it</p>' +
+        '<ol class="howto-list">' + step.steps.map(function(b) { return '<li>' + b + '</li>'; }).join('') + '</ol>';
+    }
+
+    var contextHtml = '';
+    var contextItems = step.context || step.bullets;
+    if (contextItems && contextItems.length) {
+      contextHtml = '<p class="section-label">Good to know</p>' +
+        '<ul class="context-list">' + contextItems.map(function(b) { return '<li>' + b + '</li>'; }).join('') + '</ul>';
+    }
+
+    detailPanel.innerHTML =
+      '<p class="detail-eyebrow">STEP ' + (active + 1) + ' OF ' + data.steps.length + '</p>' +
+      '<h3>' + step.title + '</h3>' +
+      '<p class="lead">' + step.lead + '</p>' +
+      howtoHtml +
+      promptsHtml +
+      contextHtml +
+      exampleHtml +
+      '<div class="detail-actions">' +
+        '<button class="mark-btn' + (isDone ? ' done' : '') + '" id="mark-done-btn">' + (isDone ? 'Marked complete' : 'Mark as done') + '</button>' +
+        '<button class="nav-btn" id="prev-step-btn"' + (active === 0 ? ' disabled' : '') + '>\u2190 Previous</button>' +
+        '<button class="nav-btn" id="next-step-btn"' + (active === data.steps.length - 1 ? ' disabled' : '') + '>Next \u2192</button>' +
+      '</div>';
+
+    detailPanel.querySelectorAll('.prompt-copy-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var pi = btn.getAttribute('data-prompt-idx');
+        var text = document.getElementById('prompt-text-' + active + '-' + pi).textContent;
+        var done = function() {
+          var original = btn.textContent;
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          setTimeout(function() { btn.textContent = original; btn.classList.remove('copied'); }, 1600);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done).catch(done);
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); } catch (e) {}
+          document.body.removeChild(ta);
+          done();
+        }
+      });
+    });
+
+    document.getElementById('mark-done-btn').addEventListener('click', function() {
+      var list = state.done[track] || [];
+      var idx = list.indexOf(active);
+      if (idx > -1) { list.splice(idx, 1); } else { list.push(active); }
+      state.done[track] = list;
+      saveState(state);
+      render(track);
+    });
+
+    document.getElementById('prev-step-btn').addEventListener('click', function() {
+      if (active > 0) { state.activeStep[track] = active - 1; saveState(state); render(track); }
+    });
+
+    document.getElementById('next-step-btn').addEventListener('click', function() {
+      if (active < data.steps.length - 1) { state.activeStep[track] = active + 1; saveState(state); render(track); }
+    });
+  }
+
+  function renderProgress(track) {
+    var data = CONTENT[track];
+    var done = state.done[track] || [];
+    var pct = Math.round((done.length / data.steps.length) * 100);
+    progressLabel.textContent = done.length + ' of ' + data.steps.length + ' complete';
+    progressFill.style.width = pct + '%';
+  }
+
+  function renderSwitcher(track) {
+    document.getElementById('switch-dev').classList.toggle('active', track === 'dev');
+    document.getElementById('switch-mkt').classList.toggle('active', track === 'mkt');
+  }
+
+  function render(track) {
+    document.body.classList.toggle('mkt-active', track === 'mkt');
+    wfHeading.textContent = CONTENT[track].label + ' track';
+    wfSub.textContent = CONTENT[track].sub;
+    renderSwitcher(track);
+    renderPath(track);
+    renderDetail(track);
+    renderProgress(track);
+  }
+
+  function goToWorkflow(track) {
+    state.track = track;
+    saveState(state);
+    document.getElementById('select-screen').style.display = 'none';
+    document.getElementById('workflow-screen').style.display = 'block';
+    render(track);
+  }
+
+  function goToSelect() {
+    document.getElementById('workflow-screen').style.display = 'none';
+    document.getElementById('select-screen').style.display = 'flex';
+  }
+
+  document.querySelectorAll('[data-track]').forEach(function(el) {
+    if (el.id === 'switch-dev' || el.id === 'switch-mkt') return;
+    el.addEventListener('click', function() { goToWorkflow(el.getAttribute('data-track')); });
+  });
+
+  document.getElementById('switch-dev').addEventListener('click', function() { goToWorkflow('dev'); });
+  document.getElementById('switch-mkt').addEventListener('click', function() { goToWorkflow('mkt'); });
+  document.getElementById('change-track-btn').addEventListener('click', goToSelect);
+
+  document.getElementById('shared-toggle').addEventListener('click', function() {
+    var body = document.getElementById('shared-body');
+    var expanded = this.getAttribute('aria-expanded') === 'true';
+    this.setAttribute('aria-expanded', String(!expanded));
+    body.classList.toggle('open', !expanded);
+  });
+
+  if (state.track === 'dev' || state.track === 'mkt') {
+    goToWorkflow(state.track);
+  }
+})();
+</script>
+</body>
+</html>
