@@ -264,7 +264,7 @@
           <div class="track-card dev">
             <span class="track-tag">DEVELOPMENT</span>
             <h2>Development &amp; Web</h2>
-            <p>WordPress builds, custom sites, microsites, CAWB and Dealer Connect work — using Claude directly inside your codebase.</p>
+            <p>For the premium seats setting up Claude for the whole company — API keys, MCP connectors, permissions — plus WordPress, CAWB and Dealer Connect work in the codebase.</p>
             <div class="track-tool">Primary tool: <strong>Claude Code</strong>, run from the terminal or desktop app.</div>
             <button class="track-go" type="button" data-track="dev">Start development track</button>
           </div>
@@ -272,7 +272,7 @@
           <div class="track-card mkt">
             <span class="track-tag">MARKETING &amp; ACCOUNTS</span>
             <h2>Marketing &amp; Accounts</h2>
-            <p>Client reporting, proposals, ad copy, SEO content and account work — using Claude as a drafting and research partner.</p>
+            <p>For the rest of the team — getting started with Claude and using it day to day for reporting, proposals, ad copy, SEO content and account work.</p>
             <div class="track-tool">Primary tool: <strong>Claude Cowork / Claude chat</strong>, no coding required.</div>
             <button class="track-go" type="button" data-track="mkt">Start marketing track</button>
           </div>
@@ -392,7 +392,7 @@
   var CONTENT = {
     dev: {
       label: 'Development',
-      sub: 'You work in the codebase — WordPress builds, custom sites, microsites and Dealer Connect/CAWB integrations. Claude Code runs from the terminal or desktop app and reads your project directly.',
+      sub: 'You set up the infrastructure the rest of the team runs on — API keys, MCP connectors, per-project scoping and permissions — and you work in the codebase on WordPress builds, custom sites, microsites and Dealer Connect/CAWB integrations. Claude Code runs from the terminal or desktop app and reads your project directly.',
       steps: [
         {
           title: 'Install Claude Code',
@@ -464,14 +464,15 @@
             'Go to <code>claude.ai/new#settings/connectors</code>, click <strong>Add custom connector</strong>.',
             'Name it (e.g. "Pipeboard Google Ads") and paste the link, click <strong>Add</strong>.',
             'Click <strong>Connect</strong> and sign in to the platform when it asks.',
-            'Add the other platforms the same way — TikTok, Snap, or whatever else you run. Connect every ad account, even the ones that never performed.'
+            'Add the other platforms the same way — TikTok (<code>https://tiktok-ads.mcp.pipeboard.co/</code>), Snap (<code>https://snap-ads.mcp.pipeboard.co/</code>), or whatever else you run. Connect every ad account, even the ones that never performed.'
           ],
           context: [
-            'MCP stands for Model Context Protocol — a connector that tells Claude what a platform can do and how to ask for it. No API calls to write, no query language to learn — you type what you want.',
+            'MCP stands for Model Context Protocol — a connector that tells Claude what a platform can do and how to ask for it. No API calls to write, no query language to learn — you type what you want. Without one, getting data in means export a CSV, paste it in, ask, copy the answer out, and repeat next week; with one, it’s a single sentence.',
+            'What you can reach: ad platforms (Google Ads, Meta, TikTok, LinkedIn, Snap), analytics (GA4, Search Console), email (Klaviyo and most others through their API), ecommerce (Shopify, WooCommerce), working tools (Notion, Slack, Gmail, Calendar, Drive, Figma), research (DataForSEO for keywords, search results and backlinks) and databases (Supabase).',
             'This is sanctioned use, not a grey area: connecting through an MCP or an API key works through each platform’s own official door, and is within Google, Meta and Klaviyo’s guidelines. What gets accounts flagged is tools that click around your account pretending to be you — this isn’t that.',
-            'Connectors arrive three ways — one-click (maintained by Anthropic or the platform: Klaviyo, Notion, Slack, Gmail, Calendar, Drive), third-party (a company like Pipeboard handles sign-in — the route for ad platforms), or self-hosted on your own machine (more setup, only when a specific job needs it). The live list is at <code>claude.ai/new#settings/connectors</code>.',
+            'Connectors arrive three ways — one-click (maintained by Anthropic or the platform: Klaviyo, Notion, Slack, Gmail, Calendar, Drive), third-party (a company like Pipeboard handles sign-in — the route for ad platforms), or self-hosted on your own machine (more setup, only when a specific job needs it). The live list is at <code>claude.ai/new#settings/connectors</code>. There’s also a fourth route that isn’t an MCP at all — an API key in your .env file — covered in “Choose your access route”.',
             'Connect what you actually use, not everything you could — every connected MCP adds a description of itself to what Claude loads into memory each session, so more isn’t free.',
-            'For ad platforms specifically we use <code>Pipeboard</code>, not the platforms’ own connectors — members using those directly have hit rate limits and account flags, and Pipeboard’s sign-in and delivery across all four has been reliable since we moved to it.'
+            'For ad platforms we use <code>Pipeboard</code>, not the platforms’ own connectors. Google and Meta both publish their own MCPs, but they’re rougher to set up and have been known to hit rate limits and account flags when used directly. One Pipeboard sign-in covers Google Ads, Meta, TikTok and Snap. The platforms keep releasing their own tooling, so expect to migrate at some point — connect what works today.'
           ]
         },
         {
@@ -481,11 +482,13 @@
             'Restart Claude Code so it loads the new connection: type <code>/exit</code>, then <code>claude</code> again to relaunch.',
             'Run <code>/mcp</code> to confirm it’s listed and connected. If it shows as needing authentication, pick it in <code>/mcp</code> and follow the one-time sign-in.',
             'Test it with a real pull before trusting it for client work — use the first prompt below.',
-            'Setting up a connector that isn’t Pipeboard? Type what you’re doing, in plan mode, and let Claude walk you through what to click before doing anything — the second prompt below is the template.'
+            'Setting up a connector that isn’t Pipeboard? Type what you’re doing, in plan mode, and let Claude walk you through what to click before doing anything — the second prompt below is the template. Any key it needs goes in your .env file, never in the chat.'
           ],
           context: [
-            'If something breaks: connected but no data → disconnect and reconnect at <code>claude.ai/new#settings/connectors</code>, then restart Claude. Wrong account → log out of the wrong Google/Facebook login in your browser first, then reconnect. Not showing in <code>/mcp</code> → restart Claude; if still missing, type "update yourself to the latest version" and restart again. Google Ads jobs stalling mid-run → you’ve hit the shared API throttle Pipeboard uses for every user; wait a few minutes and ask again.',
-            'If a new connection sits in an approval queue: Pipeboard limits how many ad accounts it acts on at once. Go to <code>pipeboard.co/settings/slots</code> and give the account a slot, then ask again.'
+            'If something breaks: connected but no data → disconnect and reconnect at <code>claude.ai/new#settings/connectors</code>, then restart Claude. Wrong account → log out of the wrong Google/Facebook login in your browser first, then reconnect. Not showing in <code>/mcp</code> → restart Claude; if still missing, type "update yourself to the latest version" and restart again. Google Ads jobs stalling mid-run → you’ve hit the shared API throttle. Pipeboard uses its own approved Google Ads developer token for every user, so you don’t need one of your own — wait a few minutes and ask again.',
+            'If a new connection sits in an approval queue: Pipeboard limits how many ad accounts it acts on at once. Go to <code>pipeboard.co/settings/slots</code> and give the account a slot, then ask again.',
+            'Once it’s connected, ask “what can I pull from the Pipeboard Google Ads connector?” and Claude lists what it can do.',
+            'Screenshot any error during setup and paste it into Claude. Platform setup is the painful part that opens up everything after it — screenshot your way through.'
           ],
           prompts: [
             'Pull my Google Ads campaigns from the last 30 days through Pipeboard. Show me campaign name, spend and conversions in a table.',
@@ -502,17 +505,21 @@
           steps: [
             'Unsure which route fits a platform you haven’t connected yet? Ask directly — use the first prompt below with any platform names swapped in.',
             'If Claude picks the wrong route, just tell it — e.g. type "use the API, not the connector, for this."',
-            'Want a standing preference? Add the second prompt below to your CLAUDE.md.'
+            'Want a standing preference? Add the second prompt below to your CLAUDE.md.',
+            'When a connector can’t pull the volume you need, switch to the API key — the third prompt below is the pattern, once your .env is set up.'
           ],
           context: [
             'MCP (connector): best for platforms with lots of everyday actions and data — ad platforms, analytics, email. The default for most work.',
             'CLI: a small command-line tool Claude installs and runs itself when it needs to — GitHub’s, Supabase’s, Google Workspace’s. You never type these commands yourself.',
-            'API key: lives in your project’s <code>.env</code> file. For serious extraction — pulling years of history — the raw API often beats the connector, which isn’t built for that volume.',
-            'Cheapest to most expensive, roughly: database queries (already aggregated) → CLIs (near-zero idle cost) → MCPs with deferred loading (small idle cost, moderate per call) → large file reads (one big hit) → web scraping or raw HTTP (slowest and most fragile — a last resort).'
+            'API key: lives in the <code>.env</code> file at the top of your Claude Code folder. For serious extraction — pulling years of history — the raw API often beats the connector, which isn’t built for that volume.',
+            'Cheapest to most expensive, roughly: database queries (already aggregated) → CLIs (near-zero idle cost) → MCPs with deferred loading (small idle cost, moderate per call) → large file reads (one big hit) → web scraping or raw HTTP (slowest and most fragile — a last resort).',
+            'Want an inventory? Ask “show me every CLI installed on this machine that you can use.”',
+            'One-off extractions cost what they cost. Pulling every email out of Klaviyo once is a one-time cost you use for months — don’t let the token count put you off.'
           ],
           prompts: [
             'For Klaviyo, Google Ads and GitHub, tell me whether you’d use an MCP, a CLI or an API key, and why.',
-            'Add this to my CLAUDE.md: prefer a CLI over an MCP when both exist for the same job.'
+            'Add this to my CLAUDE.md: prefer a CLI over an MCP when both exist for the same job.',
+            'I’ve added a Klaviyo API key to my .env file. Use it directly — not the connector — to pull every campaign from the last 18 months into a CSV in the data folder.'
           ],
           example: {
             label: 'How Claude decides — no need to memorise this',
@@ -521,18 +528,20 @@
         },
         {
           title: 'Set up your .env file',
-          lead: 'Every key you give Claude — API key, database key, token — lives in one plain-text file called .env in your Claude Code project folder. Keys never go through the chat.',
+          lead: 'Every key you give Claude — API key, database key, token — lives in one plain-text file called .env at the top of your Claude Code folder. Keys never go through the chat.',
           steps: [
-            'Type the first prompt below, in your Claude Code project folder, to create the file. No key yet? Leave the line empty; you’ll paste the value in once you have it.',
+            'Type the first prompt below, from your Claude Code folder, to create the file. No key yet? Leave the line empty; you’ll paste the value in once you have it.',
             'Generate the key on the platform’s website (usually under Settings or Developers), and copy it.',
             'Paste it in yourself after the <code>=</code> on its line, in your text editor, and save. Never paste a key into the Claude chat.',
             'Back in Claude, verify it landed without exposing it — use the second prompt below.'
           ],
           context: [
+            'The one rule: a key never goes through the chat — not pasted into a prompt, not read back to you, not in a screenshot. Chat history is kept for a while, and anything in it is a copy you can’t take back.',
             'Never ask Claude to <code>cat</code>, <code>grep</code>, <code>echo</code> or open the file to "double-check" a key.',
             'Can’t see the .env file? It’s hidden on purpose. Windows: in File Explorer, turn on View → Show → Hidden items. Mac: in Finder, press Cmd+Shift+. (period).',
             'One .env at the top of your Claude Code folder covers every project inside it. A client whose keys must stay fully separate gets its own .env in its own folder.',
-            'Name keys for the platform, in capitals — <code>KLAVIYO_API_KEY</code>, <code>SHOPIFY_ADMIN_TOKEN</code> — you’ll be reading these names for months, so keep them obvious.'
+            'Name keys for the platform, in capitals — <code>KLAVIYO_API_KEY</code>, <code>SHOPIFY_ADMIN_TOKEN</code> — you’ll be reading these names for months, so keep them obvious.',
+            'Think a key has leaked? Generate a new one on the platform and paste it over the old line — the old key is dead the moment you do.'
           ],
           prompts: [
             'In my Claude Code folder, create a .env file with one empty line for each key I’m about to add, named like this: KLAVIYO_API_KEY=. Add .env to .gitignore so it’s never shared, then open the file in my text editor. Don’t ask me for the values — I’ll paste them in myself — and never print them.',
@@ -540,26 +549,29 @@
           ],
           example: {
             label: 'What a finished .env file looks like',
-            body: 'KLAVIYO_API_KEY=pk_live_5f2a9c...\nSHOPIFY_ADMIN_TOKEN=shpat_9d3e1b...\nGOOGLE_ADS_DEVELOPER_TOKEN=8vQmZ2...\nSUPABASE_URL=https://xzklmnop.supabase.co\nSUPABASE_SERVICE_ROLE_KEY=sb_secret_9f1c...\n\nOne name-value pair per line, no spaces, no quotes. This is the only place these values ever live — not in a prompt, not in a screenshot, not in CLAUDE.md.'
+            body: 'KLAVIYO_API_KEY=pk_live_5f2a9c...\nSHOPIFY_ADMIN_TOKEN=shpat_9d3e1b...\nSUPABASE_URL=https://xzklmnop.supabase.co\nSUPABASE_SERVICE_ROLE_KEY=sb_secret_9f1c...\n\nOne name-value pair per line, no spaces, no quotes. This is the only place these values ever live — not in a prompt, not in a screenshot, not in CLAUDE.md.'
           }
         },
         {
           title: 'Connect every account',
           lead: 'Once one platform works, connect everything you touch — including channels that never performed — then make asking Claude your default habit instead of switching to another tool.',
           steps: [
-            'Connect every account you run, dead channels included.',
+            'Connect every account you run, dead channels included — this week: Google Ads, Meta, your email platform, Shopify if the client sells online. Leave GA4, Search Console and the other heavier setups until a job needs them.',
             'Ask Claude the things you’d normally ask a team member — use the prompts below to start.',
             'Keep the conversation going instead of starting over each time — pull a report, then ask it to expand on the part that worries you.',
-            'Run an audit early, then take every follow-up question to Claude instead of your team.',
+            'Run an audit early, then take every follow-up question to Claude instead of your team — it holds the full audit context. “Why are 5 conversion actions all set to primary?” “What would you fix first?” “Show me the keywords wasting the most.” Learn enough to judge the work, even if you hand it back to someone.',
             'Try the daily-switch test once: for one full day, every time you leave Claude to paste something in from another tool, write it down. That list is your connection to-do.'
           ],
           context: [
             'Paused campaigns and old creative are still context that makes later work better — a channel that "never converted" is still useful history once it\'s connected.',
-            'Brief the goal before the question — "profit has to go up but revenue can’t drop, now tell me what’s wrong in the account" gets a sharper answer than the bare question.'
+            'Brief the goal before the question — "profit has to go up but revenue can’t drop, now tell me what’s wrong in the account" gets a sharper answer than the bare question.',
+            'Screenshot a platform, paste it in and ask “what’s standing out here?” — it works before the connector is even set up.',
+            'Keep your daily-switch list in a text file in the project folder and review it on Friday. Every line you connect removes a switch for good.'
           ],
           prompts: [
             'What did we do in Google Ads last month, are there any issues in the Meta account right now, and how is the email program going? Pull whatever you need.',
-            'Which 5 ads have the highest spend and the worst cost per lead right now?'
+            'Which 5 ads have the highest spend and the worst cost per lead right now?',
+            'How is the lead gen account going compared with the month before?'
           ],
           example: {
             label: 'A plain-English question, answered',
@@ -572,13 +584,15 @@
           steps: [
             'Tell Claude what the project needs and it creates <code>.mcp.json</code> for you — use the prompt below to set up read-only access to a connector.',
             'If a login covers several accounts (a Google Ads manager account, a Meta Business Manager), add a "# Client context" block to the project’s CLAUDE.md naming which one this project means.',
-            'Check what’s live anytime with "what MCPs are active in this session?" or <code>/mcp</code>.',
+            'Check what’s live anytime with "what MCPs are active in this session?" or <code>/mcp</code> — each one shows connected, error or stale. It’s the first place to look when something isn’t working.',
+            'After setting a connector to read-only, type "show me what you blocked" — Claude lists the write tools it added to the project’s permissions file.',
             'Switch one off mid-session without losing the setup: open <code>/mcp</code> and toggle it off — it comes back next time.'
           ],
           context: [
             'Connectors you add on the claude.ai page follow your account into every session. <code>.mcp.json</code> is for connectors that belong to one project only — ask "which of my connectors are account-wide and which are this project’s?" if you’re not sure.',
             'Typical setups: an ecommerce client connects Google Ads and Meta through Pipeboard, plus Klaviyo, GA4, Shopify and Supabase for memory. A lead-gen client connects Google Ads, LinkedIn Ads, Search Console, GA4, the CRM and Supabase. An SEO project connects Search Console, DataForSEO, GA4 and Supabase.',
-            'Keep <code>.mcp.json</code> in the project so anyone else who opens it gets the same connectors, keep <code>.env</code> out of anything shared since sign-in stays per machine, and review <code>.mcp.json</code> every few months to remove what’s stopped being used.'
+            'Keep <code>.mcp.json</code> in the project so anyone else who opens it gets the same connectors, keep <code>.env</code> out of anything shared since sign-in stays per machine, and review <code>.mcp.json</code> every few months to remove what’s stopped being used.',
+            'Name connectors clearly when several clients share a platform — <code>klaviyo-clientname</code>, not <code>klaviyo</code>. With a full client roster, this is what stops Claude reaching into the wrong account.'
           ],
           prompts: [
             'Set up the Google Ads MCP in read-only mode for this project. I don’t want anything changed in the account yet.'
@@ -614,8 +628,8 @@
           title: 'Read vs write access',
           lead: 'Read access is safe — pull data, report, analyse, be open with it. Write access is real — create, pause, send, delete. Keep every connector read-only until you’ve earned trust with it, and put one rule in your memory file before you ever switch a write on.',
           steps: [
-            'Add the safety line below to your project’s master CLAUDE.md before you switch any connector to write access.',
-            'Switch writes on only when: you specifically need Claude to change something, you’ve done a month of read-only work with it and trust what it pulls, and you’re ready to read and approve every single change before it happens.',
+            'Add the safety line below to your CLAUDE.md now, while everything is still read-only.',
+            'Switch writes on only when: you specifically need Claude to change something, you’re optimising the account daily and trust what it pulls, and you’re ready to read and approve every single change before it happens.',
             'The moment a write-capable connector is on, switch to Manual mode (<code>Shift+Tab</code>) so every live action needs your yes.',
             'Enable write access deliberately, one connector at a time — use the second prompt below.',
             'Earn the trust first: do the same action yourself 2–3 times so you know what correct looks like, then watch Claude do it once with full prompts and check the result, repeat 2–3 times, and only then let it run several in a row.',
@@ -624,7 +638,10 @@
           ],
           context: [
             'Read is cheap to get wrong: a bad read wastes a few tokens and nothing else. Write is expensive and public — Google Ads pauses the wrong campaign and a client’s best product loses hours of spend; Meta launches with the wrong cap; Klaviyo sends a half-finished draft to a live segment; Slack posts to the wrong channel in front of everyone.',
-            'Sensible defaults by platform: Google Ads and Meta — read-only until you’re optimising daily, writes through Pipeboard approved one at a time. Klaviyo — read-only, every send approved manually, always. GA4 and Search Console — read-only is all you’ll ever need. Notion — read/write is fine, still watch the prompts. Slack and Gmail — read often, write rarely, drafts not sends. Shopify — read-only for analysis, writes rare and always approved.'
+            'Sensible defaults by platform: Google Ads and Meta — read-only until you’re optimising daily, writes through Pipeboard approved one at a time. Klaviyo — read-only, every send approved manually, always. GA4 and Search Console — read-only is all you’ll ever need. Notion — read/write is fine, still watch the prompts. Slack and Gmail — read often, write rarely, drafts not sends. Shopify — read-only for analysis, writes rare and always approved.',
+            'Write access is a privilege, not a default — enable it per operation, never “just in case”. Keep a short list in the project CLAUDE.md of which connectors have writes on and for what, and review it every few months.',
+            'Some platforms let you make a test account. Practise writes there first.',
+            'Guardrails only hold if you keep them. If a new request would break a rule, Claude should flag it and ask before changing it — review the rules when your needs change, and never let Claude loosen one without being asked.'
           ],
           prompts: [
             'Add this to my CLAUDE.md: Never publish, launch, pause, send, change a budget or delete anything on a live platform without my explicit confirmation first. Always ask.',
@@ -761,6 +778,7 @@
           context: [
             'Keep CLAUDE.md files current as project conventions change — stale context leads to worse first drafts. Share a structure or prompting pattern that works well with the team rather than everyone re-inventing it.',
             'Remember it’s per project, not global, and read-only until you trust it — the same rules from earlier steps apply as you add more.',
+            'You’re also setting this up for the marketing team. They work in Claude Cowork or claude.ai, which don’t read your <code>.mcp.json</code> or <code>.env</code> — tell them which connectors to connect, keep those read-only, handle any write access yourself with account-owner sign-off, and run the full-history API pulls for them when a connector can’t get everything.',
             'Some tools connect through an API key in <code>.env</code> instead of an MCP at all — image generation, deep-audit keys for specific platforms. Add those as you go.',
             'The full stack is grouped into 3 tiers by setup effort — see the tier breakdown below.',
             'The account-mining workflow that turns 18 months of campaign history into a style guide, then writes forward content from it, is covered in full on the marketing & accounts track — it’s the same connectors doing the reporting and content work either way.'
@@ -801,7 +819,7 @@
     },
     mkt: {
       label: 'Marketing & Accounts',
-      sub: 'You work in reports, proposals, copy and content — no coding required. Claude Cowork (or Claude chat) drafts alongside you while you stay in control of what actually goes to a client.',
+      sub: 'You work in reports, proposals, copy and content — no coding required. The connectors and keys are set up for you by the development track; Claude Cowork (or Claude chat) drafts alongside you while you stay in control of what actually goes to a client.',
       steps: [
         {
           title: 'Get access',
@@ -815,26 +833,27 @@
           context: []
         },
         {
-          title: 'Connect Google Ads & Meta',
-          lead: 'Reporting, audits and account work are stronger from live data than from a CSV someone exported last week. Connect Google Ads and Meta once, through Pipeboard, and every future report can pull straight from the account.',
+          title: 'Use your connected accounts',
+          lead: 'Reporting, audits and account work are stronger from live data than from a CSV someone exported last week. The development team sets up the connectors to Google Ads, Meta and the other platforms — your job is to connect to them once and then ask.',
           steps: [
-            'Go to <code>pipeboard.co/setup/connect</code> and sign in — free to start.',
-            'Copy the link for Google Ads (<code>https://google-ads.mcp.pipeboard.co/</code>) and Meta Ads (<code>https://meta-ads.mcp.pipeboard.co/</code>).',
-            'Go to <code>claude.ai/new#settings/connectors</code>, click <strong>Add custom connector</strong>.',
-            'Name it (e.g. "Pipeboard Google Ads") and paste the link, click <strong>Add</strong>.',
-            'Click <strong>Connect</strong> and sign in to the platform when it asks. Repeat for Meta.',
-            'Connect every account on the client roster, including paused or underperforming channels.',
-            'Once connected, ask the questions you’d normally ask a team member — use the prompts below.'
+            'Ask the development team which connectors you should have and which client accounts you’ve been given access to.',
+            'Go to <code>claude.ai/new#settings/connectors</code>. For each connector they’ve given you (e.g. "Pipeboard Google Ads"), click <strong>Connect</strong> and sign in when it asks. If one’s missing, ask the development team to add it — don’t set up your own.',
+            'Start a fresh chat and test it: "Pull my Google Ads campaigns from the last 30 days. Show me campaign name, spend and conversions in a table."',
+            'Once connected, ask the questions you’d normally ask a team member — use the prompts below.',
+            'No connector yet for a platform? Screenshot it, paste the screenshot in and ask "what’s standing out here?"'
           ],
           context: [
             'This is sanctioned use, not a grey area — connecting through an official connector works through each platform’s own approved door. It’s within Google, Meta and Klaviyo’s guidelines; what gets accounts flagged is tools that click around pretending to be you.',
-            'We use <code>Pipeboard</code> rather than the platforms’ own connectors — one sign-in covers Google Ads, Meta, TikTok and Snap, and it’s what we’ve found reliable.',
+            'We use <code>Pipeboard</code> rather than the platforms’ own connectors — one sign-in covers Google Ads, Meta, TikTok and Snap.',
             'If it looks connected but nothing comes back: disconnect and reconnect at <code>claude.ai/new#settings/connectors</code>, then start a fresh chat. If it pulled the wrong account, log out of the wrong Google or Facebook login in your browser first, then reconnect.',
-            'These connectors are read-only by default — pulling data and reporting is safe. Anything that would change a live account (pausing a campaign, adjusting a budget) needs write access switched on deliberately, which is covered on the development track and should only happen with account-owner sign-off.'
+            'Keep the conversation going: pull a report, then ask it to expand on the part that worries you. Brief the goal before the question — “profit has to go up but revenue can’t drop, now tell me what’s wrong in the account” gets a sharper answer than the bare question.',
+            'Try the daily-switch test: for one day, every time you leave Claude to paste something in from another tool, write it down in a text file. Review it on Friday and send the list to the development team — each line is a connection they can set up.',
+            'Reading is safe — pulling data and reporting can’t change anything. Don’t assume a connector is read-only, though: unless its write tools have been switched off, it may be able to pause a campaign, change a budget or send an email. If Claude ever asks to approve an action that would change a live account, say no, and take it to the account owner. Write access is set up by the development team, with account-owner sign-off.'
           ],
           prompts: [
             'What did we do in Google Ads last month, are there any issues in the Meta account right now, and how is the email program going? Pull whatever you need.',
-            'Which 5 ads have the highest spend and the worst cost per lead right now?'
+            'Which 5 ads have the highest spend and the worst cost per lead right now?',
+            'Pull a report on the email program for the last 90 days, then tell me what you’d change first and why.'
           ],
           example: {
             label: 'A plain-English question, answered',
@@ -843,9 +862,9 @@
         },
         {
           title: 'Build your standing brief',
-          lead: 'Keep a short standing brief on hand for each recurring client rather than re-explaining context every session. This is just a text note you reuse — not a special feature.',
+          lead: 'Keep a short standing brief on hand for each recurring client rather than re-explaining context every session. This is the client’s brand context — the first of the 2 documents everything else you build runs off (the style guide, two steps on, is the second).',
           steps: [
-            'Write it once, in a document or a note you can copy from: objective, audience, tone, current agreed scope.',
+            'Write it once, in a document or a note you can copy from: objective, who buys and why, what customers say in reviews, what competitors claim, tone, and current agreed scope.',
             'Include a short "what NOT to claim" list — e.g. don’t call a result a guaranteed lead, don’t reference a lock-in on a month-to-month contract.',
             'At the start of a new chat, paste this brief in as your first message (or attach it as a file) before asking for the actual work.',
             'If your plan has "Projects" (a space that keeps files and instructions attached across chats), save the brief there once instead of re-pasting it every time — check with your manager whether this is available on your account.'
@@ -885,20 +904,26 @@
           title: 'The one-prompt unlock',
           lead: 'The single highest-leverage move once a platform’s connected: have Claude read your account’s real history and build a performance-based style guide from what worked, then write forward from it. Refreshed monthly, not written once and forgotten.',
           steps: [
-            'Pull the account’s campaign history and build the style guide — use the first prompt below.',
-            'Once the guide exists, brief every new piece against it and write forward — use the second prompt below to generate a batch.',
+            'Have the client’s standing brief in place first — brand context, then the style guide.',
+            'Pull the account’s campaign history and build the style guide — use the first prompt below. In Cowork, work from the client’s folder so the guide is saved there; in claude.ai chat, save the finished guide to the client’s Project instead of a folder.',
+            'If Claude says it hit a limit or only got part of the history, ask the development team to run the full pull with the platform’s API key — that’s the complete version.',
+            'Read the guide. Argue with it. Fix what’s wrong before you write anything from it.',
+            'Once the guide exists, write forward from it — use the second prompt below to generate a batch, and the fourth to have Claude check its own copy against the guide.',
             'Refresh it monthly against real performance — use the third prompt below, on a standing calendar reminder.'
           ],
           context: [
             'This replaces the hardest part of the job — reading years of campaigns yourself to work out what actually performed. Claude can read all of it and rank it by results, not by opinion.',
             'One guide per channel — a Google Ads style guide is not a Meta style guide is not an email style guide. Don’t merge them into one master document.',
             'If the account has real spend history, the guide builds itself from performance. If it’s a fresh account with nothing to mine, build the guide the other way — brand voice from your own material, plus a competitor scan, plus the language your customers actually use in reviews.',
-            'This is also where reporting gets lighter: once the connectors are in, a report is a sentence — "pull last month’s Meta performance by campaign and write it up the way the client likes." Live data every time you ask, no dashboard subscription to keep current.'
+            'This is also where reporting gets lighter: once the connectors are in, a report is a sentence — "pull last month’s Meta performance by campaign and write it up the way the client likes." Live data every time you ask, no dashboard subscription to keep current. Audit your reporting tools — most monthly subscriptions are replaceable now. Cross-channel attribution is the gap that remains.',
+            'Include the examples. A guide that carries the 10 best-performing pieces word for word beats one that only describes them.',
+            'Style guide first, optimisation later. A good guide is strong enough that it doesn’t need best-practice rules layered on early — build it, run it, and let the next real problem show itself.'
           ],
           prompts: [
             'Pull every email campaign we’ve sent in the last 18 months with its open rate, click rate and revenue. Work out what the top 20% have in common — subject lines, structure, length, tone, offers — and build me a style guide for this channel based on what performed, not on what I think works. Save it as data/style-guide-email.md.',
             'Using data/style-guide-email.md, write me the next 6 months of email campaigns — 2 a week, matched to what performed. Save them as drafts in the drafts folder.',
-            'Update data/style-guide-email.md based on the last 30 days of performance. Anything that worked goes in. Anything that underperformed comes out. Show me what changed.'
+            'Update data/style-guide-email.md based on the last 30 days of performance. Anything that worked goes in. Anything that underperformed comes out. Show me what changed.',
+            'Write this the way data/style-guide-email.md says, then score your own copy against the guide before you show me.'
           ],
           example: {
             label: 'Claude building the guide from real history',
